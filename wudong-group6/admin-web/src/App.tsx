@@ -1,0 +1,68 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
+import Login from './pages/Login';
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import AdminList from './pages/AdminList';
+import MerchantApplication from './pages/MerchantApplication';
+import RoleList from './pages/RoleList';
+import BannerList from './pages/BannerList';
+import Settings from './pages/Settings';
+import AnnouncementList from './pages/AnnouncementList';
+import MerchantList from './pages/MerchantList';
+import OrderList from './pages/OrderList';
+import SettlementList from './pages/SettlementList';
+import TravelNoteList from './pages/TravelNoteList';
+import UserList from './pages/UserList';
+import ProductList from './pages/ProductList';
+import FoodList from './pages/FoodList';
+import HomestayList from './pages/HomestayList';
+import TravelTicketList from './pages/TravelTicketList';
+import CommunityList from './pages/CommunityList';
+
+// 路由守卫
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const token = localStorage.getItem('admin_token');
+  return token ? <>{children}</> : <Navigate to="/login" />;
+};
+
+function App() {
+  return (
+    <ConfigProvider locale={zhCN}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <Layout />
+              </PrivateRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="admin" element={<AdminList />} />
+            <Route path="application" element={<MerchantApplication />} />
+            <Route path="role" element={<RoleList />} />
+            <Route path="banner" element={<BannerList />} />
+            <Route path="settings" element={<Settings />} />
+	    <Route path="announcement" element={<AnnouncementList />} /> 
+	    <Route path="merchant" element={<MerchantList />} />
+            <Route path="order" element={<OrderList />} />
+            <Route path="settlement" element={<SettlementList />} />
+            <Route path="travel-note" element={<TravelNoteList />} />
+            <Route path="user" element={<UserList />} />
+            <Route path="products" element={<ProductList />} />
+            <Route path="food" element={<FoodList />} />
+            <Route path="homestay" element={<HomestayList />} />
+            <Route path="tickets" element={<TravelTicketList />} />
+            <Route path="community" element={<CommunityList />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ConfigProvider>
+  );
+}
+
+export default App;

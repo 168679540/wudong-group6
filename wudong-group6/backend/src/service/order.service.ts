@@ -1,0 +1,58 @@
+import { Provide } from '@midwayjs/core';
+import { InjectEntityModel } from '@midwayjs/typeorm';
+import { Repository } from 'typeorm';
+import { Order } from '../entity/order.entity';
+import { IPageParams, IPageResult } from '../interface';
+
+@Provide()
+export class OrderService {
+  @InjectEntityModel(Order)
+  orderModel: Repository<Order>;
+
+  async list(
+    params: IPageParams & { keyword?: string; type?: string; status?: number }
+  ): Promise<IPageResult<Order>> {
+    const { page = 1, pageSize = 10, keyword, type, status } = params;
+
+    const qb = this.orderModel
+      .createQueryBuilder('o')
+      .where('o.is_deleted = 0');
+
+    if (keyword) {
+      qb.andWhere('o.order_no LIKE :keyword', { keyword: `%${keyword}%` });
+    }
+    if (type) {
+      qb.andWhere('o.type = :type', { type });
+    }
+    if (status !== undefined && status !== null) {
+      qb.andWhere('o.status = :status', { status });
+    }
+
+    qb.skip((page - 1) * pageSize)
+      .take(pageSize)
+      .orderBy('o.created_at', 'DESC');
+
+    const [list, total] = await qb.getManyAndCount();
+    return { list, total, page, pageSize };
+  }
+
+  async create(data: { type: string; amount: number; userId?: number; merchantId?: number }): Promise<Order> {
+    const now = new Date();
+    const orderNo = 'WD' + now.getFullYear() +
+      String(now.getMonth() + 1).padStart(2, '0') +
+      String(now.getDate()).padStart(2, '0') +
+      String(now.getHours()).padStart(2, '0') +
+      String(now.getMinutes()).padStart(2, '0') +
+      String(now.getSeconds()).padStart(2, '0') +
+      Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+
+    const order = new Order();
+    order.orderNo = orderNo;
+    order.userId = data.userId || 1;
+    order.type = data.type;
+    order.amount = data.amount;
+    order.status = 1; // 已支付
+    order.merchantId = data.merchantId || null;
+    return this.orderModel.save(order);
+  }
+}
