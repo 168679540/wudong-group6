@@ -28,10 +28,13 @@ const PublicFood: React.FC = () => {
   const [booking, setBooking] = useState(false);
 
   useEffect(() => {
-    Promise.all([getRestaurantList({ pageSize: 50 }), getAgroProductList({ pageSize: 50 })]).then(([r, a]: any[]) => {
+    getRestaurantList({ pageSize: 50 }).then((r: any) => {
       if (r.success) { setData(r.data || []); loadFavs(r.data || []); }
-      if (a.success) setAgro(a.data || []);
     }).catch(() => message.error('加载失败')).finally(() => setLoading(false));
+    // 农产品独立加载，失败不影响主页面
+    getAgroProductList({ pageSize: 50 }).then((a: any) => {
+      if (a.success) setAgro(a.data || []);
+    }).catch(() => {});
   }, []);
 
   const loadFavs = async (items: Restaurant[]) => { const m: Record<number, boolean> = {}; await Promise.all(items.map(async r => { try { const rr: any = await checkFavorite('restaurant', r.id); m[r.id] = rr?.data?.favorited || false; } catch { m[r.id] = false; } })); setFavMap(m); };
