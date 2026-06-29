@@ -24,6 +24,7 @@ const PublicProduct: React.FC = () => {
   const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
   const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
   const [sortBy, setSortBy] = useState<string>('');
+  const [minRating, setMinRating] = useState<number>(0);
   const [cats, setCats] = useState<string[]>(['全部', '银饰', '蜡染', '刺绣', '服饰', '其他']);
   const [detail, setDetail] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<ProductReview[]>([]);
@@ -52,10 +53,10 @@ const PublicProduct: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
-    getProductList({ category: cat || undefined, keyword: search || undefined, pageSize: 50, minPrice, maxPrice, sort: sortBy || undefined }).then((r: any) => {
+    getProductList({ category: cat || undefined, keyword: search || undefined, pageSize: 50, minPrice, maxPrice, minRating: minRating || undefined, sort: sortBy || undefined }).then((r: any) => {
       if (r.success) { setData(r.data || []); loadFavStatus(r.data || []); }
     }).catch(() => message.error('加载失败')).finally(() => setLoading(false));
-  }, [cat, search, minPrice, maxPrice, sortBy]);
+  }, [cat, search, minPrice, maxPrice, minRating, sortBy]);
 
   const loadFavStatus = async (items: Product[]) => {
     const m: Record<number, boolean> = {};
@@ -185,6 +186,8 @@ const PublicProduct: React.FC = () => {
             <InputNumber placeholder="最高" min={0} value={maxPrice} onChange={v => setMaxPrice(v || undefined)} style={{ width: 110 }} size="small" />
             <Select placeholder="排序" allowClear value={sortBy || undefined} onChange={v => setSortBy(v || '')} style={{ width: 130 }} size="small"
               options={[{ value: 'sales', label: '按销量' }, { value: 'price_asc', label: '价格从低到高' }, { value: 'price_desc', label: '价格从高到低' }]} />
+            <span style={{ fontSize: 13, color: '#666', marginLeft: 8 }}>评分≥</span>
+            <Rate count={5} value={minRating} onChange={v => setMinRating(v)} style={{ fontSize: 14 }} allowClear />
           </div>
           {loading ? <Spin size="large" style={{ display: 'block', margin: '80px auto' }} /> : (
             <Row gutter={[20, 20]}>

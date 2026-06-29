@@ -7,6 +7,7 @@ export class Product {
   @Column({ type: 'varchar', length: 50, default: '银饰' }) category: string;
   @Column({ type: 'decimal', precision: 10, scale: 2 }) price: number;
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 }) freight: number;
+  @Column({ type: 'decimal', precision: 2, scale: 1, default: 5.0 }) rating: number;
   @Column({ type: 'int', default: 0 }) stock: number;
   @Column({ name: 'cover_image', type: 'varchar', length: 255, nullable: true }) coverImage: string;
   @Column({ type: 'json', nullable: true }) images: any;

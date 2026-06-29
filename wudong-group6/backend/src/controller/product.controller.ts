@@ -10,8 +10,8 @@ export class ProductController {
 
   /** PC端列表（仅上架商品，支持价格筛选+排序） */
   @Get('/list')
-  async list(@Query('page') page: number, @Query('pageSize') pageSize: number, @Query('keyword') keyword: string, @Query('category') category: string, @Query('minPrice') minPrice: number, @Query('maxPrice') maxPrice: number, @Query('sort') sort: string) {
-    const r = await this.productService.list({ page, pageSize, keyword, category, minPrice, maxPrice, sort });
+  async list(@Query('page') page: number, @Query('pageSize') pageSize: number, @Query('keyword') keyword: string, @Query('category') category: string, @Query('minPrice') minPrice: number, @Query('maxPrice') maxPrice: number, @Query('minRating') minRating: number, @Query('sort') sort: string) {
+    const r = await this.productService.list({ page, pageSize, keyword, category, minPrice, maxPrice, minRating, sort });
     return { success: true, data: r.list, total: r.total };
   }
 
