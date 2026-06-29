@@ -24,7 +24,6 @@ const PublicProduct: React.FC = () => {
   const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
   const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
   const [sortBy, setSortBy] = useState<string>('');
-  const [minRating, setMinRating] = useState<number>(0);
   const [cats, setCats] = useState<string[]>(['全部', '银饰', '蜡染', '刺绣', '服饰', '其他']);
   const [detail, setDetail] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<ProductReview[]>([]);
@@ -145,7 +144,7 @@ const PublicProduct: React.FC = () => {
     if (!buyTarget) return; setBuying(true);
     try {
       const specDesc = [specSize, specColor].filter(Boolean).join(' ');
-      const totalAmount = buyTarget.price * specQty + (buyTarget.freight || 0);
+      const totalAmount = buyTarget.price * specQty + ((buyTarget as any).freight || 0);
       const res: any = await createOrder({
         type: '商品', amount: totalAmount, merchantId: buyTarget.merchantId,
         itemName: `${buyTarget.name}${specDesc ? ' ' + specDesc : ''} ×${specQty}`, itemImage: buyTarget.coverImage,
@@ -184,8 +183,6 @@ const PublicProduct: React.FC = () => {
             <InputNumber placeholder="最高" min={0} value={maxPrice} onChange={v => setMaxPrice(v || undefined)} style={{ width: 110 }} size="small" />
             <Select placeholder="排序" allowClear value={sortBy || undefined} onChange={v => setSortBy(v || '')} style={{ width: 130 }} size="small"
               options={[{ value: 'sales', label: '按销量' }, { value: 'price_asc', label: '价格从低到高' }, { value: 'price_desc', label: '价格从高到低' }]} />
-            <span style={{ fontSize: 13, color: '#666', marginLeft: 8 }}>评分≥</span>
-            <Rate value={minRating} onChange={v => setMinRating(v)} style={{ fontSize: 14 }} allowClear />
           </div>
           {loading ? <Spin size="large" style={{ display: 'block', margin: '80px auto' }} /> : (
             <Row gutter={[20, 20]}>
@@ -292,8 +289,8 @@ const PublicProduct: React.FC = () => {
             <div style={{ marginTop: 20 }}><div style={{ marginBottom: 8, fontWeight: 'bold' }}>数量</div><InputNumber min={1} max={Math.min(buyTarget.stock, 99)} value={specQty} onChange={v => setSpecQty(v || 1)} style={{ width: '100%' }} /></div>
             <div style={{ background: '#fff7e6', borderRadius: 8, padding: '12px 16px', marginTop: 20 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#666', marginBottom: 4 }}><span>商品金额</span><span>¥{(buyTarget.price * specQty).toFixed(2)}</span></div>
-              {buyTarget.freight > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#666' }}><span>运费</span><span>¥{buyTarget.freight.toFixed(2)}</span></div>}
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, paddingTop: 8, borderTop: '1px solid #ffd591' }}><span style={{ fontSize: 15, color: '#666' }}>合计</span><span style={{ fontSize: 24, fontWeight: 'bold', color: '#f5222d' }}>¥{(buyTarget.price * specQty + (buyTarget.freight || 0)).toFixed(2)}</span></div>
+              {((buyTarget as any).freight > 0) && <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#666' }}><span>运费</span><span>¥{((buyTarget as any).freight).toFixed(2)}</span></div>}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, paddingTop: 8, borderTop: '1px solid #ffd591' }}><span style={{ fontSize: 15, color: '#666' }}>合计</span><span style={{ fontSize: 24, fontWeight: 'bold', color: '#f5222d' }}>¥{(buyTarget.price * specQty + ((buyTarget as any).freight || 0)).toFixed(2)}</span></div>
             </div>
           </div>
         )}
