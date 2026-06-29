@@ -1,5 +1,5 @@
 import request from './request';
-export interface AgroProduct { id: number; name: string; category: string; price: number; freight: number; rating: number; stock: number; coverImage: string; description: string; sales: number; merchantId: number; specs?: any; status?: number; }
+export interface AgroProduct { id: number; name: string; category: string; price: number; freight: number; rating: number; stock: number; coverImage: string; description: string; origin?: string; sales: number; merchantId: number; specs?: any; status?: number; }
 export const getAgroProductList = (params?: any) => request.get('/agro-product/list', { params });
 export const getAdminAgroProductList = (params?: any) => request.get('/agro-product/admin/list', { params });
 export const getAgroProductDetail = (id: number) => request.get('/agro-product/detail', { params: { id } });

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Tag, Select, Image, message, Button, Space, Modal, Input, Form, Popconfirm } from 'antd';
-import { TruckOutlined, DollarOutlined, UndoOutlined } from '@ant-design/icons';
-import { getOrderList, shipOrder, refundOrder, returnOrder, Order } from '../api/order';
+import { TruckOutlined, DollarOutlined, UndoOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { getOrderList, shipOrder, refundOrder, returnOrder, confirmOrder, rejectOrder, Order } from '../api/order';
 
 const { Option } = Select;
 
@@ -72,6 +72,16 @@ const OrderList: React.FC = () => {
     } catch { message.error('操作失败'); }
   };
 
+  const handleConfirm = async (id: number) => {
+    try { const res: any = await confirmOrder(id); if (res.success) { message.success('已确认'); fetchOrders(pagination.current, pagination.pageSize); } else message.error(res.message); }
+    catch { message.error('操作失败'); }
+  };
+
+  const handleReject = async (id: number) => {
+    try { const res: any = await rejectOrder(id); if (res.success) { message.success('已拒绝'); fetchOrders(pagination.current, pagination.pageSize); } else message.error(res.message); }
+    catch { message.error('操作失败'); }
+  };
+
   const columns = [
     { title: '序号', key: 'index', width: 55, render: (_: any, __: any, i: number) => (pagination.current - 1) * pagination.pageSize + i + 1 },
     { title: '商品图', dataIndex: 'itemImage', key: 'itemImage', width: 70,
@@ -87,10 +97,14 @@ const OrderList: React.FC = () => {
         <span style={{ color: '#999' }}>-</span>
     },
     { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 155, render: (v: string) => formatTime(v) },
-    { title: '操作', key: 'action', width: 80, render: (_: any, r: Order) => (
-      <Space direction="vertical" size={4}>
-        {r.status === 1 && <Popconfirm title="确定退款？" onConfirm={() => handleRefund(r.id)}><Button size="small" icon={<DollarOutlined />}>退款</Button></Popconfirm>}
-        {r.status === 2 && <Popconfirm title="确定退货？(7天内)" onConfirm={() => handleReturn(r.id)}><Button size="small" icon={<UndoOutlined />}>退货</Button></Popconfirm>}
+    { title: '操作', key: 'action', width: 160, render: (_: any, r: Order) => (
+      <Space direction="vertical" size={2}>
+        {(r.type === '餐位' || r.type === '住宿') && r.status === 1 && <>
+          <Button size="small" type="primary" icon={<CheckOutlined />} onClick={() => handleConfirm(r.id)}>确认</Button>
+          <Button size="small" danger icon={<CloseOutlined />} onClick={() => handleReject(r.id)}>拒绝</Button>
+        </>}
+        {r.status === 1 && r.type === '商品' && <Popconfirm title="确定退款？" onConfirm={() => handleRefund(r.id)}><Button size="small" icon={<DollarOutlined />}>退款</Button></Popconfirm>}
+        {r.status === 2 && r.type === '商品' && <Popconfirm title="确定退货？(7天内)" onConfirm={() => handleReturn(r.id)}><Button size="small" icon={<UndoOutlined />}>退货</Button></Popconfirm>}
       </Space>
     )},
   ];

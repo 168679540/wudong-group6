@@ -118,7 +118,7 @@ const PublicFood: React.FC = () => {
                 <Col key={a.id} xs={24} sm={12} md={6}>
                   <Card hoverable cover={<img src={a.coverImage} style={{ height: 180, objectFit: 'cover' }} alt={a.name} />}
                     actions={[<Button type="primary" size="small" onClick={() => { setAgroBuy(a); setAgroQty(1); }}>立即购买</Button>]}>
-                    <Card.Meta title={a.name} description={<><Tag color="green">{a.category}</Tag><br /><span style={{ color: '#f5222d', fontSize: 18, fontWeight: 'bold' }}>¥{a.price}</span><br /><span style={{ color: '#666', fontSize: 12 }}>{a.description?.slice(0, 40)}</span></>} />
+                    <Card.Meta title={a.name} description={<><Tag color="green">{a.category}</Tag><br /><span style={{ color: '#f5222d', fontSize: 18, fontWeight: 'bold' }}>¥{a.price}</span><br />{a.origin && <Tag color="blue" style={{ fontSize: 11 }}>产地: {a.origin}</Tag>}<br /><span style={{ color: '#666', fontSize: 12 }}>{a.description?.slice(0, 40)}</span></>} />
                   </Card>
                 </Col>
               ))}

@@ -43,4 +43,16 @@ export class OrderController {
       return { success: true, message: '退货退款成功', data: order };
     } catch (err: any) { return { success: false, message: err.message || '退货失败' }; }
   }
+
+  @Post('/confirm')
+  async confirm(@Body() body: { id: number }) {
+    try { const o = await this.orderService.confirm(body.id); return { success: true, message: '已确认', data: o }; }
+    catch (err: any) { return { success: false, message: err.message || '确认失败' }; }
+  }
+
+  @Post('/reject')
+  async reject(@Body() body: { id: number }) {
+    try { const o = await this.orderService.reject(body.id); return { success: true, message: '已拒绝', data: o }; }
+    catch (err: any) { return { success: false, message: err.message || '拒绝失败' }; }
+  }
 }

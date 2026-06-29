@@ -35,3 +35,11 @@ export const refundOrder = (id: number) => {
 export const returnOrder = (id: number) => {
   return request.post('/order/return', { id });
 };
+
+export const confirmOrder = (id: number) => {
+  return request.post('/order/confirm', { id });
+};
+
+export const rejectOrder = (id: number) => {
+  return request.post('/order/reject', { id });
+};

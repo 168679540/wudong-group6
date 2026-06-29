@@ -10,6 +10,7 @@ export class AgroProduct {
   @Column({ name: 'cover_image', type: 'varchar', length: 255, nullable: true }) coverImage: string;
   @Column({ type: 'json', nullable: true }) specs: any;
   @Column({ type: 'text', nullable: true }) description: string;
+  @Column({ type: 'varchar', length: 255, nullable: true }) origin: string;
   @Column({ name: 'merchant_id', type: 'int', unsigned: true, nullable: true }) merchantId: number;
   @Column({ type: 'tinyint', default: 1 }) status: number;
   @Column({ type: 'decimal', precision: 2, scale: 1, default: 5.0 }) rating: number;

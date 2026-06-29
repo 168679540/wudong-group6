@@ -81,7 +81,23 @@ export class OrderService {
     if (order.status !== 2) throw new Error('当前状态不可退货');
     const days = (Date.now() - new Date(order.createdAt).getTime()) / (1000 * 60 * 60 * 24);
     if (days > 7) throw new Error('已超过7天退货期限');
-    order.status = 4; // 退货退款
+    order.status = 4;
+    return this.orderModel.save(order);
+  }
+
+  async confirm(id: number): Promise<Order | null> {
+    const order = await this.orderModel.findOne({ where: { id, isDeleted: 0 } });
+    if (!order) return null;
+    if (order.status !== 1) throw new Error('当前状态不可确认');
+    order.status = 2; // 已确认
+    return this.orderModel.save(order);
+  }
+
+  async reject(id: number): Promise<Order | null> {
+    const order = await this.orderModel.findOne({ where: { id, isDeleted: 0 } });
+    if (!order) return null;
+    if (order.status !== 1) throw new Error('当前状态不可拒绝');
+    order.status = 4; // 已取消
     return this.orderModel.save(order);
   }
 }
