@@ -23,6 +23,7 @@ import TravelTicketList from './pages/TravelTicketList';
 import CommunityList from './pages/CommunityList';
 import CategoryList from './pages/CategoryList';
 import ReviewList from './pages/ReviewList';
+import MyFavorites from './pages/MyFavorites';
 import PublicHome from './pages/PublicHome';
 import MerchantJoin from './pages/MerchantJoin';
 import PublicProduct from './pages/PublicProduct';
@@ -51,6 +52,7 @@ function App() {
           <Route path="/pc/homestay" element={<PublicHomestay />} />
           <Route path="/pc/tickets" element={<PublicTickets />} />
           <Route path="/pc/community" element={<PublicCommunity />} />
+          <Route path="/pc/favorites" element={<MyFavorites />} />
           <Route path="/join" element={<MerchantJoin />} />
           {/* 管理后台（需登录） */}
           <Route

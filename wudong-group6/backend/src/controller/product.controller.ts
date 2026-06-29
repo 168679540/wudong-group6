@@ -51,4 +51,10 @@ export class ProductController {
     const p = await this.productService.updateStatus(body.id, body.status);
     return p ? { success: true, message: '状态更新成功', data: p } : { success: false, message: '商品不存在' };
   }
+
+  @Get('/stats')
+  async stats() {
+    const data = await this.productService.stats();
+    return { success: true, data };
+  }
 }

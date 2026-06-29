@@ -45,8 +45,10 @@ const PublicHome: React.FC = () => {
             { key: 'modules', label: '业务模块' },
             { key: 'join', label: '商家入驻' },
             { key: 'community', label: '游记社区' },
+            { key: 'favorites', label: '我的收藏' },
           ]}
           onClick={({ key }) => {
+            if (key === 'favorites') { navigate('/pc/favorites'); return; }
             document.getElementById(key)?.scrollIntoView({ behavior: 'smooth' });
           }}
         />

@@ -34,6 +34,11 @@ const PublicProduct: React.FC = () => {
   const [specQty, setSpecQty] = useState(1);
   const [buying, setBuying] = useState(false);
 
+  // 评价提交
+  const [myRating, setMyRating] = useState(5);
+  const [myContent, setMyContent] = useState('');
+  const [submittingReview, setSubmittingReview] = useState(false);
+
   useEffect(() => {
     getActiveCategories().then((r: any) => {
       if (r?.success && r.data?.length) setCats(['全部', ...r.data.map((c: any) => c.name)]);
@@ -65,9 +70,27 @@ const PublicProduct: React.FC = () => {
   const openDetail = (p: Product) => {
     setDetail(p);
     setReviewLoading(true);
+    setMyRating(5);
+    setMyContent('');
     getProductReviews(p.id).then((r: any) => {
       if (r.success) setReviews(r.data || []);
     }).catch(() => {}).finally(() => setReviewLoading(false));
+  };
+
+  const handleSubmitReview = async () => {
+    if (!detail || !myContent.trim()) { message.warning('请输入评价内容'); return; }
+    setSubmittingReview(true);
+    try {
+      const res: any = await createReview({ productId: detail.id, rating: myRating, content: myContent.trim() });
+      if (res.success) {
+        message.success('评价成功！');
+        setMyRating(5); setMyContent('');
+        // 刷新评价列表
+        const r2: any = await getProductReviews(detail.id);
+        if (r2.success) setReviews(r2.data || []);
+      } else { message.error(res.message || '评价失败'); }
+    } catch { message.error('评价失败'); }
+    finally { setSubmittingReview(false); }
   };
 
   const specOptions = useMemo(() => {
@@ -208,6 +231,17 @@ const PublicProduct: React.FC = () => {
                 </List.Item>
               )} />
             )}
+            {/* 提交评价 */}
+            <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: 16, marginTop: 16 }}>
+              <h5 style={{ marginBottom: 12 }}>✍️ 写评价</h5>
+              <div style={{ marginBottom: 12 }}>
+                <span style={{ marginRight: 8 }}>评分：</span>
+                <Rate value={myRating} onChange={setMyRating} />
+              </div>
+              <Input.TextArea rows={3} value={myContent} onChange={e => setMyContent(e.target.value)}
+                placeholder="分享您的使用体验..." maxLength={500} style={{ marginBottom: 12 }} />
+              <Button type="primary" loading={submittingReview} onClick={handleSubmitReview}>提交评价</Button>
+            </div>
           </div>
         )}
       </Modal>

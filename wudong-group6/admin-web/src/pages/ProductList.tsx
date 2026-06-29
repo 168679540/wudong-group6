@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Space, Tag, Modal, Form, Input, InputNumber, Select, Image, Popconfirm, message } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-import { getAdminProductList, createProduct, updateProduct, deleteProduct, updateProductStatus, Product } from '../api/product';
+import { Table, Button, Space, Tag, Modal, Form, Input, InputNumber, Select, Image, Popconfirm, message, Card, Row, Col, Statistic, Alert, List as AntList } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, EyeInvisibleOutlined, WarningOutlined, TrophyOutlined, DollarOutlined } from '@ant-design/icons';
+import { getAdminProductList, createProduct, updateProduct, deleteProduct, updateProductStatus, getProductStats, Product } from '../api/product';
 
 const CATS = ['银饰', '蜡染', '刺绣', '服饰', '其他'];
 
@@ -10,6 +10,7 @@ const ProductList: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
   const [modalOpen, setModalOpen] = useState(false);
+  const [stats, setStats] = useState<{ hotTop: Product[]; lowStock: Product[]; totalSold: number } | null>(null);
   const [editing, setEditing] = useState<Product | null>(null);
   const [saving, setSaving] = useState(false);
   const [form] = Form.useForm();
@@ -24,7 +25,11 @@ const ProductList: React.FC = () => {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); loadStats(); }, []);
+
+  const loadStats = () => {
+    getProductStats().then((r: any) => { if (r.success) setStats(r.data); }).catch(() => {});
+  };
 
   const openCreate = () => {
     setEditing(null);
@@ -120,6 +125,33 @@ const ProductList: React.FC = () => {
 
   return (
     <div>
+      {/* 库存预警 */}
+      {stats && stats.lowStock.length > 0 && (
+        <Alert type="warning" showIcon icon={<WarningOutlined />} style={{ marginBottom: 16 }}
+          message="库存预警" description={
+            <span>{stats.lowStock.map(p => `${p.name}(仅剩${p.stock}件)`).join(' / ')}</span>
+          } />
+      )}
+
+      {/* 统计卡片 */}
+      {stats && (
+        <Row gutter={16} style={{ marginBottom: 16 }}>
+          <Col span={8}>
+            <Card size="small"><Statistic title="累计销量" value={stats.totalSold} suffix="件" prefix={<DollarOutlined />} /></Card>
+          </Col>
+          <Col span={8}>
+            <Card size="small"><Statistic title="库存预警" value={stats.lowStock.length} suffix="件" valueStyle={{ color: stats.lowStock.length > 0 ? '#faad14' : '#52c41a' }} /></Card>
+          </Col>
+          <Col span={8}>
+            <Card size="small" title={<><TrophyOutlined /> 热销TOP3</>}>
+              {stats.hotTop.slice(0, 3).map((p, i) => (
+                <div key={p.id} style={{ fontSize: 13 }}>{i + 1}. {p.name} <Tag color="red">{p.sales}件</Tag></div>
+              ))}
+            </Card>
+          </Col>
+        </Row>
+      )}
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2 style={{ margin: 0 }}>衣·非遗商品管理</h2>
         <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>新增商品</Button>

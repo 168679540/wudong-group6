@@ -59,4 +59,16 @@ export class ProductService {
     p.status = status;
     return this.model.save(p);
   }
+
+  async stats(): Promise<{ hotTop: Product[]; lowStock: Product[]; totalSold: number }> {
+    const hotTop = await this.model.createQueryBuilder('p')
+      .where('p.is_deleted = 0').andWhere('p.status = 1')
+      .orderBy('p.sales', 'DESC').limit(10).getMany();
+    const lowStock = await this.model.createQueryBuilder('p')
+      .where('p.is_deleted = 0').andWhere('p.status = 1').andWhere('p.stock < 10').andWhere('p.stock > 0')
+      .orderBy('p.stock', 'ASC').getMany();
+    const totalResult = await this.model.createQueryBuilder('p')
+      .select('COALESCE(SUM(p.sales), 0)', 'total').where('p.is_deleted = 0').getRawOne();
+    return { hotTop, lowStock, totalSold: Number(totalResult?.total || 0) };
+  }
 }

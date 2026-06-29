@@ -19,3 +19,5 @@ export const updateProduct = (data: Partial<Product> & { id: number }) => reques
 export const deleteProduct = (id: number) => request.delete('/product/delete', { params: { id } });
 
 export const updateProductStatus = (id: number, status: number) => request.put('/product/status', { id, status });
+
+export const getProductStats = () => request.get('/product/stats');
