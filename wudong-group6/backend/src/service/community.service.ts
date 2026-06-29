@@ -36,6 +36,17 @@ export class CommunityService {
     return this.commentModel.save(c);
   }
 
+  async updateNote(note: TravelNote): Promise<TravelNote> { return this.noteModel.save(note); }
+
+  async createNote(data: { title: string; content: string; coverImage?: string; location?: string; authorName?: string }): Promise<TravelNote> {
+    const n = new TravelNote();
+    Object.assign(n, data);
+    n.status = 0; // 待审核
+    n.authorId = 1;
+    n.viewCount = 0; n.likeCount = 0;
+    return this.noteModel.save(n);
+  }
+
   async stats(): Promise<{ totalNotes: number; totalViews: number; totalLikes: number; totalComments: number }> {
     const [n, c] = await Promise.all([
       this.noteModel.createQueryBuilder('t').select('COUNT(*)','cnt').addSelect('COALESCE(SUM(t.viewCount),0)','views').addSelect('COALESCE(SUM(t.likeCount),0)','likes').where('t.is_deleted=0').andWhere('t.status=1').getRawOne(),

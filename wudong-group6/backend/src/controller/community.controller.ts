@@ -27,6 +27,21 @@ export class CommunityController {
     return { success: true, message: '评论成功', data: c };
   }
 
+  @Post('/note/like')
+  async like(@Body() body: { id: number }) {
+    const note = await this.communityService.noteDetail(body.id);
+    if (!note) return { success: false, message: '游记不存在' };
+    note.likeCount = (note.likeCount || 0) + 1;
+    await this.communityService.updateNote(note);
+    return { success: true, data: { likeCount: note.likeCount } };
+  }
+
+  @Post('/note/create')
+  async createNote(@Body() body: { title: string; content: string; coverImage?: string; location?: string; authorName?: string }) {
+    const note = await this.communityService.createNote(body);
+    return { success: true, message: '发布成功，等待审核', data: note };
+  }
+
   @Get('/stats')
   async stats() { const data = await this.communityService.stats(); return { success: true, data }; }
 }

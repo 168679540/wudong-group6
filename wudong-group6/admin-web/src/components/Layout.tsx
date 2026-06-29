@@ -24,6 +24,8 @@ const Layout = () => {
         { key: '/user', icon: <UserOutlined />, label: '游客用户' },
         { key: '/role', icon: <SafetyCertificateOutlined />, label: '角色权限' },
         { key: '/settings', icon: <SettingOutlined />, label: '系统设置' },
+    { key: '/messages', icon: <SoundOutlined />, label: '消息管理' },
+    { key: '/operation-logs', icon: <FileTextOutlined />, label: '操作日志' },
       ],
     },
     { type: 'divider' },
@@ -86,7 +88,7 @@ const Layout = () => {
   const getOpenKeys = () => {
     const path = location.pathname;
     const parentMap: Record<string, string> = {
-      '/admin': 'sys', '/user': 'sys', '/role': 'sys', '/settings': 'sys',
+      '/admin': 'sys', '/user': 'sys', '/role': 'sys', '/settings': 'sys', '/messages': 'sys', '/operation-logs': 'sys',
       '/product-category': 'yi', '/products': 'yi', '/product-reviews': 'yi',
       '/food': 'shi', '/restaurant-reviews': 'shi', '/agro-products': 'shi', '/agro-category': 'shi', '/meal-slots': 'shi',
       '/homestay': 'zhu', '/homestay-reviews': 'zhu',
