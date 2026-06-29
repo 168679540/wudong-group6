@@ -5,7 +5,7 @@ import {
   DashboardOutlined, TeamOutlined, SettingOutlined, LogoutOutlined,
   AuditOutlined, SafetyCertificateOutlined, PictureOutlined, SoundOutlined,
   ShopOutlined, OrderedListOutlined, DollarCircleOutlined, FileTextOutlined, UserOutlined,
-  SkinOutlined, AppstoreOutlined, EyeOutlined, CoffeeOutlined, HomeOutlined, CompassOutlined, ClockCircleOutlined, ShoppingCartOutlined, EnvironmentOutlined, CommentOutlined, TagOutlined,
+  SkinOutlined, AppstoreOutlined, EyeOutlined, CoffeeOutlined, HomeOutlined, CompassOutlined, ClockCircleOutlined, ShoppingCartOutlined, EnvironmentOutlined, CommentOutlined, TagsOutlined,
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = AntLayout;
@@ -65,7 +65,7 @@ const Layout = () => {
       children: [
         { key: '/travel-note', icon: <FileTextOutlined />, label: '游记审核' },
         { key: '/comment-admin', icon: <CommentOutlined />, label: '评论管理' },
-        { key: '/topics', icon: <TagOutlined />, label: '话题管理' },
+        { key: '/topics', icon: <TagsOutlined />, label: '话题管理' },
       ],
     },
     { type: 'divider' },
