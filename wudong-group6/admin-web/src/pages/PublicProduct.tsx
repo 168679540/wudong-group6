@@ -143,8 +143,10 @@ const PublicProduct: React.FC = () => {
   const handleBuyNow = async () => {
     if (!buyTarget) return; setBuying(true);
     try {
+      const price = Number(buyTarget.price);
+      const freight = Number((buyTarget as any).freight || 0);
       const specDesc = [specSize, specColor].filter(Boolean).join(' ');
-      const totalAmount = buyTarget.price * specQty + ((buyTarget as any).freight || 0);
+      const totalAmount = price * specQty + freight;
       const res: any = await createOrder({
         type: '商品', amount: totalAmount, merchantId: buyTarget.merchantId,
         itemName: `${buyTarget.name}${specDesc ? ' ' + specDesc : ''} ×${specQty}`, itemImage: buyTarget.coverImage,
@@ -204,7 +206,7 @@ const PublicProduct: React.FC = () => {
                       description={
                         <div>
                           <Tag color={catColors[p.category] || 'default'}>{p.category}</Tag>
-                          <div style={{ marginTop: 8 }}><span style={{ color: '#f5222d', fontSize: 22, fontWeight: 'bold' }}>¥{p.price}</span>{p.freight > 0 && <Tag color="orange" style={{ marginLeft: 4, fontSize: 11 }}>运费¥{p.freight}</Tag>}<span style={{ color: '#999', marginLeft: 12 }}>已售 {p.sales} 件</span></div>
+                          <div style={{ marginTop: 8 }}><span style={{ color: '#f5222d', fontSize: 22, fontWeight: 'bold' }}>¥{p.price}</span>{Number(p.freight) > 0 && <Tag color="orange" style={{ marginLeft: 4, fontSize: 11 }}>运费¥{Number(p.freight).toFixed(2)}</Tag>}<span style={{ color: '#999', marginLeft: 12 }}>已售 {p.sales} 件</span></div>
                           <p style={{ color: '#666', marginTop: 8, fontSize: 13, lineHeight: 1.6 }}>{p.description?.slice(0, 60)}{(p.description?.length || 0) > 60 ? '...' : ''}</p>
                         </div>
                       } />
@@ -289,8 +291,8 @@ const PublicProduct: React.FC = () => {
             <div style={{ marginTop: 20 }}><div style={{ marginBottom: 8, fontWeight: 'bold' }}>数量</div><InputNumber min={1} max={Math.min(buyTarget.stock, 99)} value={specQty} onChange={v => setSpecQty(v || 1)} style={{ width: '100%' }} /></div>
             <div style={{ background: '#fff7e6', borderRadius: 8, padding: '12px 16px', marginTop: 20 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#666', marginBottom: 4 }}><span>商品金额</span><span>¥{(buyTarget.price * specQty).toFixed(2)}</span></div>
-              {((buyTarget as any).freight > 0) && <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#666' }}><span>运费</span><span>¥{((buyTarget as any).freight).toFixed(2)}</span></div>}
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, paddingTop: 8, borderTop: '1px solid #ffd591' }}><span style={{ fontSize: 15, color: '#666' }}>合计</span><span style={{ fontSize: 24, fontWeight: 'bold', color: '#f5222d' }}>¥{(buyTarget.price * specQty + ((buyTarget as any).freight || 0)).toFixed(2)}</span></div>
+              {(Number((buyTarget as any).freight || 0) > 0) && <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#666' }}><span>运费</span><span>¥{Number((buyTarget as any).freight || 0).toFixed(2)}</span></div>}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, paddingTop: 8, borderTop: '1px solid #ffd591' }}><span style={{ fontSize: 15, color: '#666' }}>合计</span><span style={{ fontSize: 24, fontWeight: 'bold', color: '#f5222d' }}>¥{(Number(buyTarget.price) * specQty + Number((buyTarget as any).freight || 0)).toFixed(2)}</span></div>
             </div>
           </div>
         )}

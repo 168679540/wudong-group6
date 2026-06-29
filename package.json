@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "adm-zip": "^0.5.17"
+  },
+  "dependencies": {
+    "docx": "^9.7.1"
+  }
+}
