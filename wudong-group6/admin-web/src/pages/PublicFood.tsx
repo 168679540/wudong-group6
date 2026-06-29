@@ -98,18 +98,37 @@ const PublicFood: React.FC = () => {
 
           {/* 地图模式 */}
           {showMap && !loading && (
-            <div style={{ marginBottom: 24, borderRadius: 12, overflow: 'hidden', border: '2px solid #1890ff' }}>
-              <iframe
-                title="乌东美食地图"
-                width="100%"
-                height="450"
-                frameBorder="0"
-                scrolling="no"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=108.41,26.35,108.45,26.38&layer=mapnik&marker=26.363,108.432&marker=26.361,108.431&marker=26.359,108.429"
-                style={{ border: 0 }}
-              />
-              <div style={{ background: '#fff', padding: '8px 12px', fontSize: 13, color: '#666' }}>
-                📍 乌东苗寨美食分布 — ① 乌东苗家酸汤鱼 ② 苗寨长桌宴 ③ 山里人家农家菜
+            <div style={{ marginBottom: 24, borderRadius: 12, overflow: 'hidden', border: '2px solid #1890ff', position: 'relative', height: 400, background: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 30%, #a5d6a7 60%, #81c784 100%)' }}>
+              <div style={{ position: 'absolute', top: 15, left: 20, background: 'rgba(255,255,255,.9)', borderRadius: 8, padding: '4px 12px', fontSize: 13, fontWeight: 'bold' }}>🗺️ 乌东苗寨美食地图</div>
+              {/* 模拟道路 */}
+              <div style={{ position: 'absolute', top: 180, left: 0, right: 0, height: 6, background: '#fff', opacity: 0.6 }} />
+              <div style={{ position: 'absolute', top: 0, left: 150, bottom: 0, width: 4, background: '#fff', opacity: 0.4 }} />
+              {/* 餐厅1 */}
+              <div style={{ position: 'absolute', top: 50, left: '35%', textAlign: 'center' }}>
+                <div style={{ fontSize: 32, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,.3))' }}>📍</div>
+                <div style={{ background: '#fff', borderRadius: 8, padding: '6px 12px', marginTop: 4, boxShadow: '0 2px 8px rgba(0,0,0,.15)', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: 13, fontWeight: 'bold' }}>乌东苗家酸汤鱼</div>
+                  <div style={{ fontSize: 11, color: '#f5222d' }}>人均 ¥68</div>
+                  <Rate disabled value={4.8} style={{ fontSize: 10 }} />
+                </div>
+              </div>
+              {/* 餐厅2 */}
+              <div style={{ position: 'absolute', top: 120, left: '55%', textAlign: 'center' }}>
+                <div style={{ fontSize: 32, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,.3))' }}>📍</div>
+                <div style={{ background: '#fff', borderRadius: 8, padding: '6px 12px', marginTop: 4, boxShadow: '0 2px 8px rgba(0,0,0,.15)', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: 13, fontWeight: 'bold' }}>苗寨长桌宴</div>
+                  <div style={{ fontSize: 11, color: '#f5222d' }}>人均 ¥128</div>
+                  <Rate disabled value={4.9} style={{ fontSize: 10 }} />
+                </div>
+              </div>
+              {/* 餐厅3 */}
+              <div style={{ position: 'absolute', top: 250, left: '20%', textAlign: 'center' }}>
+                <div style={{ fontSize: 32, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,.3))' }}>📍</div>
+                <div style={{ background: '#fff', borderRadius: 8, padding: '6px 12px', marginTop: 4, boxShadow: '0 2px 8px rgba(0,0,0,.15)', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontSize: 13, fontWeight: 'bold' }}>山里人家农家菜</div>
+                  <div style={{ fontSize: 11, color: '#f5222d' }}>人均 ¥45</div>
+                  <Rate disabled value={4.5} style={{ fontSize: 10 }} />
+                </div>
               </div>
             </div>
           )}
@@ -135,7 +154,7 @@ const PublicFood: React.FC = () => {
         </div>
 
         {/* 农产品特产专区 */}
-        {!showMap && agro.length > 0 && (
+        {agro.length > 0 && (
           <div style={{ background: '#fff', borderRadius: 12, padding: 32, marginTop: 24 }}>
             <h3 style={{ marginBottom: 16 }}>🌾 农产品特产</h3>
             <Row gutter={[16, 16]}>
