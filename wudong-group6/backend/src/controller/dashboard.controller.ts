@@ -104,9 +104,15 @@ export class DashboardController {
       .getCount();
 
     const orderMap: Record<string, number> = {};
-    orderTrend.forEach((r: any) => { orderMap[r.date] = Number(r.count); });
+    orderTrend.forEach((r: any) => {
+      const d = typeof r.date === 'string' ? r.date.slice(0, 10) : localDate(new Date(r.date));
+      orderMap[d] = Number(r.count);
+    });
     const userMap: Record<string, number> = {};
-    userTrend.forEach((r: any) => { userMap[r.date] = Number(r.count); });
+    userTrend.forEach((r: any) => {
+      const d = typeof r.date === 'string' ? r.date.slice(0, 10) : localDate(new Date(r.date));
+      userMap[d] = Number(r.count);
+    });
 
     return {
       success: true,

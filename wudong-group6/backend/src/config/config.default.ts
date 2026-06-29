@@ -17,6 +17,7 @@ export default {
         password: 'root',
         database: 'wudong_platform',
         charset: 'utf8mb4',
+        timezone: '+08:00',
         synchronize: false,
         logging: true,
         entities: ['**/entity/*.entity{.ts,.js}'],
@@ -25,6 +26,7 @@ export default {
         extra: {
           charset: 'utf8mb4',
           connectionLimit: 10,
+          timezone: '+08:00',
         },
       },
     },
