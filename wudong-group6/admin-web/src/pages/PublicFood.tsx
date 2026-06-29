@@ -7,7 +7,9 @@ import { createOrder } from '../api/order';
 import { toggleFavorite, checkFavorite } from '../api/favorite';
 import { getMealSlots, MealSlot } from '../api/mealSlot';
 import { getAgroProductList, AgroProduct } from '../api/agroProduct';
+import { useCart } from '../components/CartContext';
 import CartDrawer from '../components/CartDrawer';
+import request from '../api/request';
 
 const { Header, Content, Footer } = Layout;
 
@@ -32,6 +34,13 @@ const PublicFood: React.FC = () => {
   const [agroQty, setAgroQty] = useState(1);
   const [agroBuying, setAgroBuying] = useState(false);
 
+  // 评价
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [myRating, setMyRating] = useState(5);
+  const [myContent, setMyContent] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
     getRestaurantList({ pageSize: 50 }).then((r: any) => {
       if (r.success) { setData(r.data || []); loadFavs(r.data || []); }
@@ -45,7 +54,13 @@ const PublicFood: React.FC = () => {
   const loadFavs = async (items: Restaurant[]) => { const m: Record<number, boolean> = {}; await Promise.all(items.map(async r => { try { const rr: any = await checkFavorite('restaurant', r.id); m[r.id] = rr?.data?.favorited || false; } catch { m[r.id] = false; } })); setFavMap(m); };
   const handleFav = async (r: Restaurant) => { const res: any = await toggleFavorite('restaurant', r.id); if (res.success) { setFavMap(p => ({ ...p, [r.id]: res.data.favorited })); } };
 
-  const openDetail = (r: Restaurant) => { setDetail(r); };
+  const openDetail = (r: Restaurant) => {
+    setDetail(r); setMyRating(5); setMyContent('');
+    setReviewLoading(true);
+    request.get('/restaurant-review/list', { params: { restaurantId: r.id } }).then((res: any) => {
+      if (res.success) setReviews(res.data || []);
+    }).catch(() => {}).finally(() => setReviewLoading(false));
+  };
 
   const openBook = (r: Restaurant) => {
     setBookTarget(r); setPartySize(2); setReserveTime(null); setSpecialReq('');
@@ -113,7 +128,35 @@ const PublicFood: React.FC = () => {
       </Content>
       <Modal open={!!detail} onCancel={() => setDetail(null)} footer={[<Button key="back" onClick={() => setDetail(null)}>返回</Button>, <Button key="book" type="primary" onClick={() => { const d = detail; setDetail(null); setTimeout(() => d && openBook(d), 100); }}>预订餐位 ¥{detail?.avgPrice}/人</Button>]} width={680} title={detail?.name}>
         {detail && (<div><img src={detail.coverImage} alt={detail.name} style={{ width: '100%', maxHeight: 360, objectFit: 'cover', borderRadius: 8, marginBottom: 16 }} onError={e => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/600x400'; }} />
-          <Descriptions column={1} bordered size="small"><Descriptions.Item label="评分"><Rate disabled value={detail.rating} /></Descriptions.Item><Descriptions.Item label="人均"><span style={{ color: '#f5222d', fontSize: 18, fontWeight: 'bold' }}>¥{detail.avgPrice}</span> /人</Descriptions.Item><Descriptions.Item label="地址"><EnvironmentOutlined /> {detail.address}</Descriptions.Item><Descriptions.Item label="介绍">{detail.description || '暂无介绍'}</Descriptions.Item></Descriptions></div>)}
+          <Descriptions column={1} bordered size="small"><Descriptions.Item label="评分"><Rate disabled value={detail.rating} /></Descriptions.Item><Descriptions.Item label="人均"><span style={{ color: '#f5222d', fontSize: 18, fontWeight: 'bold' }}>¥{detail.avgPrice}</span> /人</Descriptions.Item><Descriptions.Item label="地址"><EnvironmentOutlined /> {detail.address}</Descriptions.Item><Descriptions.Item label="介绍">{detail.description || '暂无介绍'}</Descriptions.Item></Descriptions>
+          {/* 评价列表 */}
+          <h4 style={{ marginTop: 20, marginBottom: 12 }}>📝 食客评价 ({reviews.length}条)</h4>
+          {reviewLoading ? <Spin /> : reviews.length === 0 ? <div style={{ color: '#999', padding: 12 }}>暂无评价，来写第一条吧</div> :
+            reviews.map((r: any) => (
+              <div key={r.id} style={{ borderBottom: '1px solid #f0f0f0', padding: '8px 0' }}>
+                <Rate disabled value={r.rating} style={{ fontSize: 12 }} />
+                <span style={{ fontSize: 13 }}> {r.content}</span>
+                {r.reply && <Tag color="blue" style={{ marginLeft: 8, fontSize: 11 }}>商家回复: {r.reply}</Tag>}
+                <span style={{ color: '#999', fontSize: 11, float: 'right' }}>{new Date(r.createdAt).toLocaleString()}</span>
+              </div>
+            ))}
+          {/* 写评价 */}
+          <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: 12, marginTop: 12 }}>
+            <h5 style={{ marginBottom: 8 }}>✍️ 写评价</h5>
+            <Rate value={myRating} onChange={setMyRating} style={{ marginBottom: 8 }} />
+            <Input.TextArea rows={2} value={myContent} onChange={e => setMyContent(e.target.value)} placeholder="分享您的用餐体验..." maxLength={500} style={{ marginBottom: 8 }} />
+            <Button type="primary" size="small" loading={submitting} onClick={async () => {
+              if (!detail || !myContent.trim()) { message.warning('请输入评价内容'); return; }
+              setSubmitting(true);
+              try {
+                const res: any = await request.post('/restaurant-review/create', { restaurantId: detail.id, rating: myRating, content: myContent.trim() });
+                if (res.success) { message.success('评价成功！'); setMyRating(5); setMyContent('');
+                  const r2: any = await request.get('/restaurant-review/list', { params: { restaurantId: detail.id } }); if (r2.success) setReviews(r2.data || []); }
+                else message.error(res.message || '评价失败');
+              } catch { message.error('评价失败'); } finally { setSubmitting(false); }
+            }}>提交评价</Button>
+          </div>
+        </div>)}
       </Modal>
       <Modal open={!!bookTarget} onCancel={() => setBookTarget(null)} footer={[<Button key="back" onClick={() => setBookTarget(null)}>返回</Button>, <Button key="ok" type="primary" loading={booking} onClick={handleBook}>确认预订 ¥{((Number(bookTarget?.avgPrice) || 0) * partySize).toFixed(2)}</Button>]} width={480} title={`预订 - ${bookTarget?.name}`}>
         {bookTarget && (<div style={{ padding: '16px 0' }}>
