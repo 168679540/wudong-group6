@@ -26,6 +26,7 @@ const PublicTickets: React.FC = () => {
   const [visitDate, setVisitDate] = useState<any>(null);
   const [buying, setBuying] = useState(false);
   const [traffic, setTraffic] = useState<TrafficGuide[]>([]);
+  const [trafficDetail, setTrafficDetail] = useState<TrafficGuide | null>(null);
 
   useEffect(() => { getTrafficList({ pageSize: 10 }).then((r: any) => { if (r.success) setTraffic(r.data || []); }).catch(() => {}); }, []);
   useEffect(() => {
@@ -98,7 +99,8 @@ const PublicTickets: React.FC = () => {
             <Row gutter={[16, 16]}>
               {traffic.map(g => (
                 <Col key={g.id} xs={24} sm={12} md={8}>
-                  <Card hoverable size="small" title={<>{g.transportType && <Tag color="blue">{g.transportType}</Tag>} {g.title}</>}>
+                  <Card hoverable size="small" onClick={() => setTrafficDetail(g)}
+                    title={<>{g.transportType && <Tag color="blue">{g.transportType}</Tag>} {g.title}</>}>
                     <div style={{ fontSize: 13, color: '#666' }}>
                       <div>📍 {g.origin} → {g.destination}</div>
                       <div>⏱ {g.duration} | 💰 {g.cost}</div>
@@ -122,6 +124,23 @@ const PublicTickets: React.FC = () => {
           <div style={{ marginBottom: 16 }}><span style={{ fontWeight: 'bold' }}>游玩日期</span><DatePicker value={visitDate} onChange={setVisitDate} style={{ width: '100%', marginTop: 8 }} /></div>
           <div style={{ background: '#fff7e6', borderRadius: 8, padding: '12px 16px', display: 'flex', justifyContent: 'space-between' }}><span>合计</span><span style={{ fontSize: 24, fontWeight: 'bold', color: '#f5222d' }}>¥{((Number(buyTarget.price) || 0) * qty).toFixed(2)}</span></div>
         </div>)}
+      </Modal>
+      {/* 交通攻略详情弹窗 */}
+      <Modal open={!!trafficDetail} onCancel={() => setTrafficDetail(null)} footer={null} width={640} title={trafficDetail?.title}>
+        {trafficDetail && (
+          <div>
+            <Descriptions column={2} bordered size="small" style={{ marginBottom: 16 }}>
+              <Descriptions.Item label="出发地">{trafficDetail.origin}</Descriptions.Item>
+              <Descriptions.Item label="目的地">{trafficDetail.destination}</Descriptions.Item>
+              <Descriptions.Item label="交通方式"><Tag color="blue">{trafficDetail.transportType}</Tag></Descriptions.Item>
+              <Descriptions.Item label="预计耗时">{trafficDetail.duration}</Descriptions.Item>
+              <Descriptions.Item label="参考费用" span={2}>{trafficDetail.cost}</Descriptions.Item>
+            </Descriptions>
+            <div style={{ background: '#fafafa', padding: 16, borderRadius: 8, lineHeight: 2, fontSize: 14, whiteSpace: 'pre-wrap' }}>
+              {trafficDetail.content}
+            </div>
+          </div>
+        )}
       </Modal>
       <Footer style={{ textAlign: 'center', background: '#001529', color: '#fff', padding: '24px 50px' }}><div>🏯 乌东文旅 · 行·线路门票 | © 2026 第6组</div></Footer>
     </Layout>
