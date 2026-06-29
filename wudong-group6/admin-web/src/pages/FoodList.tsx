@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Space, Tag, Modal, Form, Input, InputNumber, Select, Image, Popconfirm, message, Rate } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { getAdminRestaurantList, createRestaurant, updateRestaurant, deleteRestaurant, updateRestaurantStatus, Restaurant } from '../api/restaurant';
+import request from '../api/request';
 
 const FoodList: React.FC = () => {
   const [data, setData] = useState<Restaurant[]>([]);
@@ -18,7 +19,10 @@ const FoodList: React.FC = () => {
       if (r.success) { setData(r.data || []); setPagination(prev => ({ ...prev, current: page, total: r.total || 0 })); }
     }).catch(() => message.error('加载失败')).finally(() => setLoading(false));
   };
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); loadStats(); }, []);
+
+  const [stat, setStat] = useState<any>({ totalBookings: 0, topRestaurants: [] });
+  const loadStats = () => { request.get('/restaurant/stats').then((r: any) => { if (r.success) setStat(r.data); }).catch(() => {}); };
 
   const openCreate = () => { setEditing(null); form.resetFields(); form.setFieldsValue({ status: 1, avgPrice: 0, rating: 5 }); setModalOpen(true); };
   const openEdit = (r: Restaurant) => { setEditing(r); form.setFieldsValue(r); setModalOpen(true); };

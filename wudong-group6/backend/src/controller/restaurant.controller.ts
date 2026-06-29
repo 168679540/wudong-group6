@@ -33,4 +33,7 @@ export class RestaurantController {
 
   @Put('/status')
   async status(@Body() body: { id: number; status: number }) { const r = await this.rService.updateStatus(body.id, body.status); return r ? { success: true, message: '状态更新' } : { success: false, message: '不存在' }; }
+
+  @Get('/stats')
+  async stats() { const data = await this.rService.stats(); return { success: true, data }; }
 }

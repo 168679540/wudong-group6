@@ -25,6 +25,8 @@ import CategoryList from './pages/CategoryList';
 import ReviewList from './pages/ReviewList';
 import AgroProductList from './pages/AgroProductList';
 import MealSlotList from './pages/MealSlotList';
+import AgroCategoryList from './pages/AgroCategoryList';
+import RestaurantReviewList from './pages/RestaurantReviewList';
 import MyFavorites from './pages/MyFavorites';
 import MyOrders from './pages/MyOrders';
 import PublicHome from './pages/PublicHome';
@@ -84,6 +86,8 @@ function App() {
             <Route path="product-reviews" element={<ReviewList />} />
             <Route path="agro-products" element={<AgroProductList />} />
             <Route path="meal-slots" element={<MealSlotList />} />
+            <Route path="agro-category" element={<AgroCategoryList />} />
+            <Route path="restaurant-reviews" element={<RestaurantReviewList />} />
             <Route path="food" element={<FoodList />} />
             <Route path="homestay" element={<HomestayList />} />
             <Route path="tickets" element={<TravelTicketList />} />

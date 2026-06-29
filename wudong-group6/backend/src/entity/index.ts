@@ -9,3 +9,4 @@ export { ProductReview } from './product-review.entity';
 export { UserFavorite } from './user-favorite.entity';
 export { AgroProduct } from './agro-product.entity';
 export { MealSlot } from './meal-slot.entity';
+export { AgroCategory } from './agro-category.entity';

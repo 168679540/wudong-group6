@@ -39,7 +39,9 @@ const Layout = () => {
       key: 'shi', icon: <CoffeeOutlined />, label: '食·餐饮美食',
       children: [
         { key: '/food', icon: <CoffeeOutlined />, label: '餐厅管理' },
+        { key: '/restaurant-reviews', icon: <EyeOutlined />, label: '餐厅评价' },
         { key: '/agro-products', icon: <ShoppingCartOutlined />, label: '农产品特产' },
+        { key: '/agro-category', icon: <AppstoreOutlined />, label: '农产品分类' },
         { key: '/meal-slots', icon: <ClockCircleOutlined />, label: '餐位时段' },
       ],
     },
@@ -81,7 +83,7 @@ const Layout = () => {
     const parentMap: Record<string, string> = {
       '/admin': 'sys', '/user': 'sys', '/role': 'sys', '/settings': 'sys',
       '/product-category': 'yi', '/products': 'yi', '/product-reviews': 'yi',
-      '/food': 'shi', '/agro-products': 'shi', '/meal-slots': 'shi',
+      '/food': 'shi', '/restaurant-reviews': 'shi', '/agro-products': 'shi', '/agro-category': 'shi', '/meal-slots': 'shi',
       '/homestay': 'zhu',
       '/tickets': 'xing',
       '/travel-note': 'she',

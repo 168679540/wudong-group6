@@ -38,6 +38,9 @@ const WHITE_LIST = [
   '/api/agro-product/list',
   '/api/agro-product/detail',
   '/api/meal-slot/list',
+  '/api/agro-category/active',
+  '/api/restaurant-review/list',
+  '/api/restaurant-review/create',
 ];
 
 @Middleware()
