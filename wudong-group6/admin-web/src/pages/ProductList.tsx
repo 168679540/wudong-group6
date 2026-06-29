@@ -38,15 +38,15 @@ const ProductList: React.FC = () => {
   const openCreate = () => {
     setEditing(null);
     form.resetFields();
-    form.setFieldsValue({ category: '银饰', status: 1, price: 0, stock: 0 });
+    form.setFieldsValue({ category: '银饰', status: 1, price: 0, stock: 0, freight: 0, isCustom: 0 });
     setModalOpen(true);
   };
 
   const openEdit = (p: Product) => {
     setEditing(p);
     form.setFieldsValue({
-      name: p.name, category: p.category, price: p.price, stock: p.stock,
-      coverImage: p.coverImage, description: p.description,
+      name: p.name, category: p.category, price: p.price, stock: p.stock, freight: Number(p.freight) || 0,
+      coverImage: p.coverImage, description: p.description, isCustom: (p as any).isCustom || 0,
       specs: p.specs ? JSON.stringify(p.specs, null, 2) : '',
     });
     setModalOpen(true);
@@ -192,13 +192,19 @@ const ProductList: React.FC = () => {
             <Form.Item name="price" label="价格(元)" rules={[{ required: true }]} style={{ width: 140 }}>
               <InputNumber min={0} precision={2} style={{ width: '100%' }} />
             </Form.Item>
-            <Form.Item name="stock" label="库存" rules={[{ required: true }]} style={{ width: 100 }}>
+            <Form.Item name="stock" label="库存" rules={[{ required: true }]} style={{ width: 90 }}>
               <InputNumber min={0} style={{ width: '100%' }} />
             </Form.Item>
-            <Form.Item name="status" label="状态" style={{ width: 100 }}>
+            <Form.Item name="freight" label="运费(元)" style={{ width: 100 }}>
+              <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+            </Form.Item>
+            <Form.Item name="status" label="状态" style={{ width: 90 }}>
               <Select options={[{ value: 1, label: '上架' }, { value: 0, label: '下架' }]} />
             </Form.Item>
           </Space>
+          <Form.Item name="isCustom" label="定制商品" extra="勾选后不支持7天无理由退换">
+            <Select options={[{ value: 0, label: '否-支持7天无理由' }, { value: 1, label: '是-不支持退换' }]} style={{ width: 280 }} />
+          </Form.Item>
           <Form.Item name="coverImage" label="封面图URL">
             <Input placeholder="https://... 或 /images/xxx.jpg" />
           </Form.Item>

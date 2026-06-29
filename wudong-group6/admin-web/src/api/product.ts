@@ -2,7 +2,7 @@ import request from './request';
 
 export interface Product {
   id: number; name: string; category: string; price: number;
-  freight: number; rating: number; stock: number; coverImage: string; description: string;
+  freight: number; rating: number; isCustom: number; stock: number; coverImage: string; description: string;
   sales: number; merchantId: number; specs?: any; status?: number;
 }
 

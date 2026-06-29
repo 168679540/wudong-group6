@@ -166,6 +166,7 @@ const PublicProduct: React.FC = () => {
           <Menu mode="horizontal" defaultSelectedKeys={['product']} style={{ border: 'none' }}
             items={[{ key: 'home', label: '首页', icon: <ArrowLeftOutlined /> }, { key: 'product', label: '衣·非遗商品', icon: <SkinOutlined /> }]}
             onClick={({ key }) => { if (key === 'home') navigate('/pc'); }} />
+          <Button type="link" onClick={() => message.info('客服热线：400-XXX-XXXX，工作时间 9:00-18:00')}>📞 联系客服</Button>
           <CartDrawer />
         </Space>
       </Header>
