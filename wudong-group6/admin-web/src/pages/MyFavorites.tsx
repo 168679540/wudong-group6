@@ -81,8 +81,9 @@ const MyFavorites: React.FC = () => {
     if (!buyTarget) return; setBuying(true);
     try {
       const specDesc = [specSize, specColor].filter(Boolean).join(' ');
+      const totalAmount = buyTarget.price * specQty + (buyTarget.freight || 0);
       const res: any = await createOrder({
-        type: '商品', amount: buyTarget.price * specQty, merchantId: buyTarget.merchantId,
+        type: '商品', amount: totalAmount, merchantId: buyTarget.merchantId,
         itemName: `${buyTarget.name}${specDesc ? ' ' + specDesc : ''} ×${specQty}`, itemImage: buyTarget.coverImage,
       });
       if (res.success) message.success(`购买成功！订单号：${res.data.orderNo}`); else message.error(res.message || '下单失败');
@@ -147,7 +148,11 @@ const MyFavorites: React.FC = () => {
               {(specOptions.colors.length > 0) && <Col span={12}><div style={{ marginBottom: 8, fontWeight: 'bold' }}>颜色款式</div><Select value={specColor || undefined} onChange={setSpecColor} style={{ width: '100%' }} options={specOptions.colors.map((s: string) => ({ value: s, label: s }))} /></Col>}
             </Row>
             <div style={{ marginTop: 20 }}><div style={{ marginBottom: 8, fontWeight: 'bold' }}>数量</div><InputNumber min={1} max={Math.min(buyTarget.stock, 99)} value={specQty} onChange={v => setSpecQty(v || 1)} style={{ width: '100%' }} /></div>
-            <div style={{ background: '#fff7e6', borderRadius: 8, padding: '12px 16px', marginTop: 20, display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 15, color: '#666' }}>合计</span><span style={{ fontSize: 24, fontWeight: 'bold', color: '#f5222d' }}>¥{(buyTarget.price * specQty).toFixed(2)}</span></div>
+            <div style={{ background: '#fff7e6', borderRadius: 8, padding: '12px 16px', marginTop: 20 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#666', marginBottom: 4 }}><span>商品金额</span><span>¥{(buyTarget.price * specQty).toFixed(2)}</span></div>
+              {buyTarget.freight > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#666' }}><span>运费</span><span>¥{buyTarget.freight.toFixed(2)}</span></div>}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, paddingTop: 8, borderTop: '1px solid #ffd591' }}><span style={{ fontSize: 15, color: '#666' }}>合计</span><span style={{ fontSize: 24, fontWeight: 'bold', color: '#f5222d' }}>¥{(buyTarget.price * specQty + (buyTarget.freight || 0)).toFixed(2)}</span></div>
+            </div>
           </div>
         )}
       </Modal>

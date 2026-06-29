@@ -31,3 +31,7 @@ export const shipOrder = (id: number, expressCompany: string, expressNo: string)
 export const refundOrder = (id: number) => {
   return request.post('/order/refund', { id });
 };
+
+export const returnOrder = (id: number) => {
+  return request.post('/order/return', { id });
+};

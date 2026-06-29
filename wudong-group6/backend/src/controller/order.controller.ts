@@ -35,4 +35,12 @@ export class OrderController {
       return { success: true, message: '退款成功', data: order };
     } catch (err: any) { return { success: false, message: err.message || '退款失败' }; }
   }
+
+  @Post('/return')
+  async returnOrder(@Body() body: { id: number }) {
+    try {
+      const order = await this.orderService.returnOrder(body.id);
+      return { success: true, message: '退货退款成功', data: order };
+    } catch (err: any) { return { success: false, message: err.message || '退货失败' }; }
+  }
 }

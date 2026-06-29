@@ -71,7 +71,17 @@ export class OrderService {
     const order = await this.orderModel.findOne({ where: { id, isDeleted: 0 } });
     if (!order) return null;
     if (order.status !== 1) throw new Error('当前状态不可退款');
-    order.status = 4;
+    order.status = 4; // 已取消/已退款
+    return this.orderModel.save(order);
+  }
+
+  async returnOrder(id: number): Promise<Order | null> {
+    const order = await this.orderModel.findOne({ where: { id, isDeleted: 0 } });
+    if (!order) return null;
+    if (order.status !== 2) throw new Error('当前状态不可退货');
+    const days = (Date.now() - new Date(order.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+    if (days > 7) throw new Error('已超过7天退货期限');
+    order.status = 4; // 退货退款
     return this.orderModel.save(order);
   }
 }

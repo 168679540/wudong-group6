@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Menu, Table, Tag, Image, Button, Spin, Empty, message } from 'antd';
-import { ArrowLeftOutlined, ShoppingCartOutlined, OrderedListOutlined } from '@ant-design/icons';
+import { Layout, Menu, Table, Tag, Image, Button, Spin, Empty, message, Popconfirm } from 'antd';
+import { ArrowLeftOutlined, OrderedListOutlined, UndoOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getOrderList, Order } from '../api/order';
+import { getOrderList, returnOrder, Order } from '../api/order';
 import CartDrawer from '../components/CartDrawer';
 
 const { Header, Content, Footer } = Layout;
@@ -25,7 +25,7 @@ const statusMap: Record<number, { text: string; color: string }> = {
   1: { text: '已支付', color: 'blue' },
   2: { text: '已发货', color: 'green' },
   3: { text: '已完成', color: 'cyan' },
-  4: { text: '已取消', color: 'red' },
+  4: { text: '已取消/退款', color: 'red' },
 };
 
 const typeColors: Record<string, string> = {
@@ -50,25 +50,26 @@ const MyOrders: React.FC = () => {
 
   useEffect(() => { fetchOrders(); }, []);
 
+  const handleReturn = async (id: number) => {
+    try {
+      const res: any = await returnOrder(id);
+      if (res.success) { message.success('退货退款申请成功'); fetchOrders(pagination.current, pagination.pageSize); }
+      else message.error(res.message || '退货失败');
+    } catch { message.error('操作失败'); }
+  };
+
   const columns = [
     { title: '序号', key: 'index', width: 55, render: (_: any, __: any, i: number) => (pagination.current - 1) * pagination.pageSize + i + 1 },
-    {
-      title: '商品图', dataIndex: 'itemImage', width: 80,
-      render: (v: string) => <Image src={v || 'https://via.placeholder.com/60'} width={55} height={55} style={{ borderRadius: 6, objectFit: 'cover' }} fallback="https://via.placeholder.com/60" />,
-    },
+    { title: '商品图', dataIndex: 'itemImage', width: 80, render: (v: string) => <Image src={v || 'https://via.placeholder.com/60'} width={55} height={55} style={{ borderRadius: 6, objectFit: 'cover' }} fallback="https://via.placeholder.com/60" /> },
     { title: '商品名称', dataIndex: 'itemName', ellipsis: true, render: (v: string) => v || '-' },
     { title: '订单号', dataIndex: 'orderNo', width: 200 },
     { title: '类型', dataIndex: 'type', width: 65, render: (v: string) => <Tag color={typeColors[v] || 'default'}>{v}</Tag> },
-    {
-      title: '状态', dataIndex: 'status', width: 75,
-      render: (v: number) => { const s = statusMap[v] || { text: '未知', color: 'default' }; return <Tag color={s.color}>{s.text}</Tag>; },
-    },
+    { title: '状态', dataIndex: 'status', width: 90, render: (v: number) => { const s = statusMap[v] || { text: '未知', color: 'default' }; return <Tag color={s.color}>{s.text}</Tag>; } },
     { title: '金额', dataIndex: 'amount', width: 90, render: (v: number) => <span style={{ color: '#f5222d', fontWeight: 'bold', fontSize: 15 }}>¥{v}</span> },
-    {
-      title: '物流', key: 'express', width: 160,
-      render: (_: any, r: Order) => r.expressNo ? <span style={{ fontSize: 12 }}>{r.expressCompany}<br />{r.expressNo}</span> : <span style={{ color: '#999' }}>-</span>,
-    },
+    { title: '物流', key: 'express', width: 160, render: (_: any, r: Order) => r.expressNo ? <span style={{ fontSize: 12 }}>{r.expressCompany}<br />{r.expressNo}</span> : <span style={{ color: '#999' }}>-</span> },
     { title: '下单时间', dataIndex: 'createdAt', width: 160, render: (v: string) => formatTime(v) },
+    { title: '操作', key: 'action', width: 80,
+      render: (_: any, r: Order) => r.status === 2 ? <Popconfirm title="确定退货退款？(7天内)" onConfirm={() => handleReturn(r.id)}><Button size="small" icon={<UndoOutlined />}>退货</Button></Popconfirm> : null },
   ];
 
   return (
