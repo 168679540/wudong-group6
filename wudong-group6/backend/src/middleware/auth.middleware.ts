@@ -28,6 +28,12 @@ const WHITE_LIST = [
   '/api/ticket/list',
   '/api/ticket/detail',
   '/api/order/create',
+  '/api/product-category/active',
+  '/api/product-review/list',
+  '/api/product-review/create',
+  '/api/favorite/list',
+  '/api/favorite/check',
+  '/api/favorite/toggle',
 ];
 
 @Middleware()

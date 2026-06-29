@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
+import { CartProvider } from './components/CartContext';
 import Login from './pages/Login';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -20,6 +21,8 @@ import FoodList from './pages/FoodList';
 import HomestayList from './pages/HomestayList';
 import TravelTicketList from './pages/TravelTicketList';
 import CommunityList from './pages/CommunityList';
+import CategoryList from './pages/CategoryList';
+import ReviewList from './pages/ReviewList';
 import PublicHome from './pages/PublicHome';
 import MerchantJoin from './pages/MerchantJoin';
 import PublicProduct from './pages/PublicProduct';
@@ -37,6 +40,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 function App() {
   return (
     <ConfigProvider locale={zhCN}>
+      <CartProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -69,7 +73,9 @@ function App() {
             <Route path="settlement" element={<SettlementList />} />
             <Route path="travel-note" element={<TravelNoteList />} />
             <Route path="user" element={<UserList />} />
+            <Route path="product-category" element={<CategoryList />} />
             <Route path="products" element={<ProductList />} />
+            <Route path="product-reviews" element={<ReviewList />} />
             <Route path="food" element={<FoodList />} />
             <Route path="homestay" element={<HomestayList />} />
             <Route path="tickets" element={<TravelTicketList />} />
@@ -77,6 +83,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      </CartProvider>
     </ConfigProvider>
   );
 }

@@ -4,3 +4,6 @@ export { Merchant } from './merchant.entity';
 export { MerchantApplication } from './merchant-application.entity';
 export { Announcement } from './announcement.entity';
 export { Banner } from './banner.entity';
+export { ProductCategory } from './product-category.entity';
+export { ProductReview } from './product-review.entity';
+export { UserFavorite } from './user-favorite.entity';

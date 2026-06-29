@@ -1,50 +1,164 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Tag, Spin, message } from 'antd';
-import { ShoppingCartOutlined, EyeOutlined } from '@ant-design/icons';
-import { getProductList, Product } from '../api/product';
-import { createOrder } from '../api/order';
+import { Table, Button, Space, Tag, Modal, Form, Input, InputNumber, Select, Image, Popconfirm, message } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { getAdminProductList, createProduct, updateProduct, deleteProduct, updateProductStatus, Product } from '../api/product';
 
-const catColors: Record<string, string> = { '银饰': 'blue', '蜡染': 'green', '刺绣': 'orange', '服饰': 'purple', '其他': 'default' };
-const cats = ['全部', '银饰', '蜡染', '刺绣', '服饰'];
+const CATS = ['银饰', '蜡染', '刺绣', '服饰', '其他'];
 
 const ProductList: React.FC = () => {
   const [data, setData] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [cat, setCat] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState<Product | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [form] = Form.useForm();
 
-  useEffect(() => {
+  const fetchData = (page = 1, pageSize = 10) => {
     setLoading(true);
-    getProductList({ category: cat || undefined, pageSize: 50 }).then((r: any) => {
-      if (r.success) setData(r.data);
-    }).catch(() => message.error('加载失败')).finally(() => setLoading(false));
-  }, [cat]);
-
-  const handleBuy = async (p: Product) => {
-    try {
-      const res: any = await createOrder({ type: '商品', amount: p.price, merchantId: p.merchantId, itemName: p.name, itemImage: p.coverImage });
-      if (res.success) message.success(`已下单：${p.name}（${res.data.orderNo}）`);
-    } catch { message.error('下单失败'); }
+    getAdminProductList({ page, pageSize })
+      .then((r: any) => {
+        if (r.success) { setData(r.data || []); setPagination(prev => ({ ...prev, current: page, total: r.total || 0 })); }
+      })
+      .catch(() => message.error('加载失败'))
+      .finally(() => setLoading(false));
   };
 
-  if (loading) return <Spin size="large" style={{ display: 'block', marginTop: 80 }} />;
+  useEffect(() => { fetchData(); }, []);
+
+  const openCreate = () => {
+    setEditing(null);
+    form.resetFields();
+    form.setFieldsValue({ category: '银饰', status: 1, price: 0, stock: 0 });
+    setModalOpen(true);
+  };
+
+  const openEdit = (p: Product) => {
+    setEditing(p);
+    form.setFieldsValue({
+      name: p.name, category: p.category, price: p.price, stock: p.stock,
+      coverImage: p.coverImage, description: p.description,
+      specs: p.specs ? JSON.stringify(p.specs, null, 2) : '',
+    });
+    setModalOpen(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      setSaving(true);
+      let specs: any = null;
+      if (values.specs) {
+        try { specs = JSON.parse(values.specs); } catch { message.error('规格JSON格式错误'); setSaving(false); return; }
+      }
+      const payload: any = { ...values, specs };
+      delete payload.specsStr;
+
+      if (editing) {
+        await updateProduct({ ...payload, id: editing.id });
+        message.success('更新成功');
+      } else {
+        await createProduct(payload);
+        message.success('创建成功');
+      }
+      setModalOpen(false);
+      fetchData(pagination.current, pagination.pageSize);
+    } catch (err: any) {
+      if (err?.errorFields) return; // form validation
+      message.error(editing ? '更新失败' : '创建失败');
+    } finally { setSaving(false); }
+  };
+
+  const handleToggle = async (p: Product) => {
+    const newStatus = p.status === 1 ? 0 : 1;
+    try {
+      await updateProductStatus(p.id, newStatus);
+      message.success(newStatus === 1 ? '已上架' : '已下架');
+      fetchData(pagination.current, pagination.pageSize);
+    } catch { message.error('操作失败'); }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteProduct(id);
+      message.success('删除成功');
+      fetchData(pagination.current, pagination.pageSize);
+    } catch { message.error('删除失败'); }
+  };
+
+  const columns = [
+    { title: 'ID', dataIndex: 'id', key: 'id', width: 60 },
+    {
+      title: '图片', dataIndex: 'coverImage', key: 'coverImage', width: 80,
+      render: (v: string) => <Image src={v} width={50} height={50} style={{ borderRadius: 6, objectFit: 'cover' }} fallback="https://via.placeholder.com/50" />,
+    },
+    { title: '名称', dataIndex: 'name', key: 'name', ellipsis: true },
+    { title: '分类', dataIndex: 'category', key: 'category', width: 80, render: (v: string) => <Tag color="blue">{v}</Tag> },
+    { title: '价格', dataIndex: 'price', key: 'price', width: 80, render: (v: number) => <span style={{ color: '#f5222d', fontWeight: 'bold' }}>¥{v}</span> },
+    { title: '库存', dataIndex: 'stock', key: 'stock', width: 60 },
+    { title: '销量', dataIndex: 'sales', key: 'sales', width: 60 },
+    {
+      title: '状态', dataIndex: 'status', key: 'status', width: 70,
+      render: (v: number) => <Tag color={v === 1 ? 'green' : 'red'}>{v === 1 ? '上架' : '下架'}</Tag>,
+    },
+    {
+      title: '操作', key: 'action', width: 220,
+      render: (_: any, record: Product) => (
+        <Space size="small">
+          <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(record)}>编辑</Button>
+          <Button size="small" icon={record.status === 1 ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+            onClick={() => handleToggle(record)}>
+            {record.status === 1 ? '下架' : '上架'}
+          </Button>
+          <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record.id)}>
+            <Button size="small" danger icon={<DeleteOutlined />}>删除</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <div>
-      <h2>非遗商品（衣）</h2>
-      <div style={{ marginBottom: 16 }}>{cats.map(c => <Tag key={c} color={c === (cat || '全部') ? '#1890ff' : 'default'} style={{ cursor: 'pointer' }} onClick={() => setCat(c === '全部' ? '' : c)}>{c}</Tag>)}</div>
-      <Row gutter={[16, 16]}>
-        {data.map(p => (
-          <Col key={p.id} xs={24} sm={12} md={8} lg={6}>
-            <Card hoverable cover={<img alt={p.name} src={p.coverImage} style={{ height: 200, objectFit: 'cover' }} />}
-              actions={[
-                <ShoppingCartOutlined key="buy" onClick={() => handleBuy(p)} title="下单" />,
-                <EyeOutlined key="view" />,
-              ]}>
-              <Card.Meta title={p.name} description={<><Tag color={catColors[p.category] || 'default'}>{p.category}</Tag><span style={{ color: '#f5222d', fontSize: 18, fontWeight: 'bold' }}>¥{p.price}</span><br /><span style={{ color: '#999' }}>销量 {p.sales}</span></>} />
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <h2 style={{ margin: 0 }}>衣·非遗商品管理</h2>
+        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>新增商品</Button>
+      </div>
+
+      <Table columns={columns} dataSource={data} loading={loading} rowKey="id" size="middle"
+        pagination={{ ...pagination, showTotal: t => `共 ${t} 条`, onChange: (p, ps) => fetchData(p, ps) }} />
+
+      <Modal title={editing ? '编辑商品' : '新增商品'} open={modalOpen} onCancel={() => setModalOpen(false)}
+        onOk={handleSave} confirmLoading={saving} width={640} destroyOnClose>
+        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="name" label="商品名称" rules={[{ required: true, message: '请输入' }]}>
+            <Input placeholder="如：苗族手工银饰吊坠" maxLength={200} />
+          </Form.Item>
+          <Space style={{ display: 'flex' }} align="start">
+            <Form.Item name="category" label="分类" rules={[{ required: true }]} style={{ width: 160 }}>
+              <Select options={CATS.map(c => ({ value: c, label: c }))} />
+            </Form.Item>
+            <Form.Item name="price" label="价格(元)" rules={[{ required: true }]} style={{ width: 140 }}>
+              <InputNumber min={0} precision={2} style={{ width: '100%' }} />
+            </Form.Item>
+            <Form.Item name="stock" label="库存" rules={[{ required: true }]} style={{ width: 100 }}>
+              <InputNumber min={0} style={{ width: '100%' }} />
+            </Form.Item>
+            <Form.Item name="status" label="状态" style={{ width: 100 }}>
+              <Select options={[{ value: 1, label: '上架' }, { value: 0, label: '下架' }]} />
+            </Form.Item>
+          </Space>
+          <Form.Item name="coverImage" label="封面图URL">
+            <Input placeholder="https://... 或 /images/xxx.jpg" />
+          </Form.Item>
+          <Form.Item name="description" label="商品描述">
+            <Input.TextArea rows={3} placeholder="商品的文化故事、工艺特色、传承人信息等" />
+          </Form.Item>
+          <Form.Item name="specs" label="规格(JSON)" extra="如：{&quot;尺寸&quot;:[&quot;小号&quot;,&quot;中号&quot;],&quot;颜色&quot;:[&quot;原色&quot;,&quot;红色&quot;]}">
+            <Input.TextArea rows={3} placeholder='{"尺寸":["小号","中号","大号"],"颜色":["原色","红色","蓝色"]}' />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

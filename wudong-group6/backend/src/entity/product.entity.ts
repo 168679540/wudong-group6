@@ -9,6 +9,7 @@ export class Product {
   @Column({ type: 'int', default: 0 }) stock: number;
   @Column({ name: 'cover_image', type: 'varchar', length: 255, nullable: true }) coverImage: string;
   @Column({ type: 'json', nullable: true }) images: any;
+  @Column({ type: 'json', nullable: true }) specs: any;
   @Column({ type: 'text', nullable: true }) description: string;
   @Column({ name: 'merchant_id', type: 'int', unsigned: true, nullable: true }) merchantId: number;
   @Column({ type: 'tinyint', default: 1 }) status: number;
