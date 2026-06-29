@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Layout, Menu, Card, Row, Col, Spin, message, Button, Modal, Descriptions, Tag, Rate, Input, InputNumber, DatePicker, Space } from 'antd';
+import React, { useEffect, useState, useMemo } from 'react';
+import { Layout, Menu, Card, Row, Col, Spin, message, Button, Modal, Descriptions, Tag, Rate, Input, InputNumber, DatePicker, Space, Select } from 'antd';
 import { EnvironmentOutlined, PhoneOutlined, ArrowLeftOutlined, CoffeeOutlined, HeartOutlined, HeartFilled, ShoppingCartOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getRestaurantList, Restaurant } from '../api/restaurant';
@@ -26,6 +26,11 @@ const PublicFood: React.FC = () => {
   const [reserveTime, setReserveTime] = useState<any>(null);
   const [specialReq, setSpecialReq] = useState('');
   const [booking, setBooking] = useState(false);
+
+  // 农产品规格购买
+  const [agroBuy, setAgroBuy] = useState<AgroProduct | null>(null);
+  const [agroQty, setAgroQty] = useState(1);
+  const [agroBuying, setAgroBuying] = useState(false);
 
   useEffect(() => {
     getRestaurantList({ pageSize: 50 }).then((r: any) => {
@@ -97,9 +102,7 @@ const PublicFood: React.FC = () => {
               {agro.map(a => (
                 <Col key={a.id} xs={24} sm={12} md={6}>
                   <Card hoverable cover={<img src={a.coverImage} style={{ height: 180, objectFit: 'cover' }} alt={a.name} />}
-                    actions={[<Button type="primary" size="small" onClick={async () => {
-                      try { const res: any = await createOrder({ type: '商品', amount: Number(a.price), merchantId: a.merchantId, itemName: a.name, itemImage: a.coverImage }); if (res.success) message.success(`购买成功！${res.data.orderNo}`); else message.error(res.message || '下单失败'); } catch { message.error('下单失败'); }
-                    }}>立即购买</Button>]}>
+                    actions={[<Button type="primary" size="small" onClick={() => { setAgroBuy(a); setAgroQty(1); }}>立即购买</Button>]}>
                     <Card.Meta title={a.name} description={<><Tag color="green">{a.category}</Tag><br /><span style={{ color: '#f5222d', fontSize: 18, fontWeight: 'bold' }}>¥{a.price}</span><br /><span style={{ color: '#666', fontSize: 12 }}>{a.description?.slice(0, 40)}</span></>} />
                   </Card>
                 </Col>
@@ -119,6 +122,18 @@ const PublicFood: React.FC = () => {
           <div style={{ marginBottom: 16 }}><span style={{ fontWeight: 'bold' }}>预约时间</span><DatePicker showTime format="YYYY-MM-DD HH:mm" value={reserveTime} onChange={setReserveTime} style={{ width: '100%', marginTop: 8 }} placeholder="选择用餐时间" /></div>
           <div style={{ marginBottom: 16 }}><span style={{ fontWeight: 'bold' }}>特殊要求</span><Input.TextArea rows={2} value={specialReq} onChange={e => setSpecialReq(e.target.value)} placeholder="如：过敏食物、包间需求" style={{ marginTop: 8 }} /></div>
           <div style={{ background: '#fff7e6', borderRadius: 8, padding: '12px 16px', display: 'flex', justifyContent: 'space-between' }}><span>合计</span><span style={{ fontSize: 24, fontWeight: 'bold', color: '#f5222d' }}>¥{((Number(bookTarget.avgPrice) || 0) * partySize).toFixed(2)}</span></div>
+        </div>)}
+      </Modal>
+      {/* 农产品购买弹窗 */}
+      <Modal open={!!agroBuy} onCancel={() => setAgroBuy(null)} footer={[
+        <Button key="ok" type="primary" loading={agroBuying} onClick={async () => {
+          if (!agroBuy) return; setAgroBuying(true);
+          try { const total = Number(agroBuy.price) * agroQty; const res: any = await createOrder({ type: '商品', amount: total, merchantId: agroBuy.merchantId, itemName: `${agroBuy.name} ×${agroQty}`, itemImage: agroBuy.coverImage }); if (res.success) { message.success(`购买成功！${res.data.orderNo}`); setAgroBuy(null); } else message.error(res.message || '失败'); } catch { message.error('购买失败'); } finally { setAgroBuying(false); }
+        }}>确认购买 ¥{agroBuy ? (Number(agroBuy.price) * agroQty).toFixed(2) : '0.00'}</Button>,
+      ]} width={400} title={`购买 - ${agroBuy?.name}`}>
+        {agroBuy && (<div style={{ padding: '16px 0' }}>
+          <div style={{ marginBottom: 16 }}><span style={{ fontWeight: 'bold' }}>数量</span><InputNumber min={1} max={Math.min(agroBuy.stock, 99)} value={agroQty} onChange={v => setAgroQty(v || 1)} style={{ width: '100%', marginTop: 8 }} /></div>
+          <div style={{ background: '#fff7e6', borderRadius: 8, padding: '12px 16px', display: 'flex', justifyContent: 'space-between' }}><span>合计</span><span style={{ fontSize: 24, fontWeight: 'bold', color: '#f5222d' }}>¥{(Number(agroBuy.price) * agroQty).toFixed(2)}</span></div>
         </div>)}
       </Modal>
       <Footer style={{ textAlign: 'center', background: '#001529', color: '#fff', padding: '24px 50px' }}><div>🏯 乌东文旅 · 食·餐饮美食 | © 2026 第6组</div></Footer>
