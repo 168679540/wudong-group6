@@ -17,7 +17,7 @@ const TravelTicketList: React.FC = () => {
 
   const handleBuy = async (t: Ticket) => {
     try {
-      const res: any = await createOrder({ type: t.type, amount: t.price, merchantId: t.merchantId });
+      const res: any = await createOrder({ type: t.type, amount: t.price, merchantId: t.merchantId, itemName: t.name, itemImage: t.coverImage });
       if (res.success) message.success(`已购买：${t.name}（${res.data.orderNo}）`);
     } catch { message.error('购买失败'); }
   };

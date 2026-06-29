@@ -20,6 +20,13 @@ import FoodList from './pages/FoodList';
 import HomestayList from './pages/HomestayList';
 import TravelTicketList from './pages/TravelTicketList';
 import CommunityList from './pages/CommunityList';
+import PublicHome from './pages/PublicHome';
+import MerchantJoin from './pages/MerchantJoin';
+import PublicProduct from './pages/PublicProduct';
+import PublicFood from './pages/PublicFood';
+import PublicHomestay from './pages/PublicHomestay';
+import PublicTickets from './pages/PublicTickets';
+import PublicCommunity from './pages/PublicCommunity';
 
 // 路由守卫
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -33,6 +40,15 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          {/* PC端公开页面 */}
+          <Route path="/pc" element={<PublicHome />} />
+          <Route path="/pc/product" element={<PublicProduct />} />
+          <Route path="/pc/food" element={<PublicFood />} />
+          <Route path="/pc/homestay" element={<PublicHomestay />} />
+          <Route path="/pc/tickets" element={<PublicTickets />} />
+          <Route path="/pc/community" element={<PublicCommunity />} />
+          <Route path="/join" element={<MerchantJoin />} />
+          {/* 管理后台（需登录） */}
           <Route
             path="/"
             element={
@@ -47,8 +63,8 @@ function App() {
             <Route path="role" element={<RoleList />} />
             <Route path="banner" element={<BannerList />} />
             <Route path="settings" element={<Settings />} />
-	    <Route path="announcement" element={<AnnouncementList />} /> 
-	    <Route path="merchant" element={<MerchantList />} />
+            <Route path="announcement" element={<AnnouncementList />} />
+            <Route path="merchant" element={<MerchantList />} />
             <Route path="order" element={<OrderList />} />
             <Route path="settlement" element={<SettlementList />} />
             <Route path="travel-note" element={<TravelNoteList />} />

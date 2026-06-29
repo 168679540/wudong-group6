@@ -14,6 +14,12 @@ export class Order {
   @Column({ type: 'varchar', length: 20 })
   type: string; // 商品/餐位/住宿/门票/路线
 
+  @Column({ name: 'item_name', type: 'varchar', length: 200, nullable: true })
+  itemName: string;
+
+  @Column({ name: 'item_image', type: 'varchar', length: 500, nullable: true })
+  itemImage: string;
+
   @Column({ type: 'tinyint', default: 0 })
   status: number; // 0=待支付, 1=已支付, 2=已确认, 3=已完成, 4=已取消
 

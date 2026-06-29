@@ -13,7 +13,21 @@ const WHITE_LIST = [
   '/api/admin/login',
   '/api/merchant/login',
   '/api/application/create',
+  '/api/merchant-application/create',
   '/api/banner/active',
+  '/api/dashboard/stats',
+  '/api/dashboard/chart',
+  '/api/community/note/list',
+  '/api/community/note/detail',
+  '/api/product/list',
+  '/api/product/detail',
+  '/api/restaurant/list',
+  '/api/restaurant/detail',
+  '/api/homestay/list',
+  '/api/homestay/detail',
+  '/api/ticket/list',
+  '/api/ticket/detail',
+  '/api/order/create',
 ];
 
 @Middleware()

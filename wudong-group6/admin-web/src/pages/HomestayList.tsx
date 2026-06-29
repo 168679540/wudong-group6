@@ -16,7 +16,7 @@ const HomestayList: React.FC = () => {
 
   const handleBook = async (h: Homestay) => {
     try {
-      const res: any = await createOrder({ type: '住宿', amount: h.pricePerNight, merchantId: h.merchantId });
+      const res: any = await createOrder({ type: '住宿', amount: h.pricePerNight, merchantId: h.merchantId, itemName: h.name, itemImage: h.coverImage });
       if (res.success) message.success(`已预订：${h.name}（${res.data.orderNo}）`);
     } catch { message.error('预订失败'); }
   };

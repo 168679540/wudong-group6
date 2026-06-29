@@ -16,7 +16,7 @@ const FoodList: React.FC = () => {
 
   const handleBook = async (r: Restaurant) => {
     try {
-      const res: any = await createOrder({ type: '餐位', amount: r.avgPrice, merchantId: r.id + 1 });
+      const res: any = await createOrder({ type: '餐位', amount: r.avgPrice, merchantId: r.id + 1, itemName: r.name, itemImage: r.coverImage });
       if (res.success) message.success(`已预订：${r.name}（${res.data.orderNo}）`);
     } catch { message.error('预订失败'); }
   };

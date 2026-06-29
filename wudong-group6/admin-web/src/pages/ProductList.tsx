@@ -21,7 +21,7 @@ const ProductList: React.FC = () => {
 
   const handleBuy = async (p: Product) => {
     try {
-      const res: any = await createOrder({ type: '商品', amount: p.price, merchantId: p.merchantId });
+      const res: any = await createOrder({ type: '商品', amount: p.price, merchantId: p.merchantId, itemName: p.name, itemImage: p.coverImage });
       if (res.success) message.success(`已下单：${p.name}（${res.data.orderNo}）`);
     } catch { message.error('下单失败'); }
   };

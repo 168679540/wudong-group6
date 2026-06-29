@@ -5,7 +5,6 @@ import {
   DashboardOutlined, TeamOutlined, SettingOutlined, LogoutOutlined,
   AuditOutlined, SafetyCertificateOutlined, PictureOutlined, SoundOutlined,
   ShopOutlined, OrderedListOutlined, DollarCircleOutlined, FileTextOutlined, UserOutlined,
-  SkinOutlined, CoffeeOutlined, HomeOutlined, CompassOutlined, CameraOutlined,
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = AntLayout;
@@ -27,18 +26,6 @@ const Layout = () => {
     { key: '/order', icon: <OrderedListOutlined />, label: '全局订单' },
     { key: '/settlement', icon: <DollarCircleOutlined />, label: '财务结算' },
     { key: '/settings', icon: <SettingOutlined />, label: '系统设置' },
-    { type: 'divider' } as const,
-    {
-      type: 'group',
-      label: '业务模块（前台预览）',
-      children: [
-        { key: '/products', icon: <SkinOutlined />, label: '衣·非遗商品' },
-        { key: '/food', icon: <CoffeeOutlined />, label: '食·餐饮美食' },
-        { key: '/homestay', icon: <HomeOutlined />, label: '住·住宿预订' },
-        { key: '/tickets', icon: <CompassOutlined />, label: '行·线路门票' },
-        { key: '/community', icon: <CameraOutlined />, label: '社区·游记分享' },
-      ],
-    },
   ];
 
   const handleLogout = () => {

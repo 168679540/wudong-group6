@@ -17,7 +17,7 @@ export class OrderController {
   }
 
   @Post('/create')
-  async create(@Body() body: { type: string; amount: number; userId?: number; merchantId?: number }) {
+  async create(@Body() body: { type: string; amount: number; userId?: number; merchantId?: number; itemName?: string; itemImage?: string }) {
     const order = await this.orderService.create(body);
     return { success: true, message: '下单成功', data: order };
   }

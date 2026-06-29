@@ -36,7 +36,7 @@ export class OrderService {
     return { list, total, page, pageSize };
   }
 
-  async create(data: { type: string; amount: number; userId?: number; merchantId?: number }): Promise<Order> {
+  async create(data: { type: string; amount: number; userId?: number; merchantId?: number; itemName?: string; itemImage?: string }): Promise<Order> {
     const now = new Date();
     const orderNo = 'WD' + now.getFullYear() +
       String(now.getMonth() + 1).padStart(2, '0') +
@@ -51,6 +51,8 @@ export class OrderService {
     order.userId = data.userId || 1;
     order.type = data.type;
     order.amount = data.amount;
+    order.itemName = data.itemName || null;
+    order.itemImage = data.itemImage || null;
     order.status = 1; // 已支付
     order.merchantId = data.merchantId || null;
     return this.orderModel.save(order);
