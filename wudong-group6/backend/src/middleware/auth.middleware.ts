@@ -43,6 +43,10 @@ const WHITE_LIST = [
   '/api/restaurant-review/create',
   '/api/homestay-review/list',
   '/api/homestay-review/create',
+  '/api/ticket-review/list',
+  '/api/ticket-review/create',
+  '/api/traffic-guide/list',
+  '/api/traffic-guide/detail',
 ];
 
 @Middleware()

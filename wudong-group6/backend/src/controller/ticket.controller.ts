@@ -8,8 +8,8 @@ export class TicketController {
   @Inject() tService: TicketService;
 
   @Get('/list')
-  async list(@Query('page') page: number, @Query('pageSize') pageSize: number, @Query('keyword') keyword: string, @Query('type') type: string) {
-    const r = await this.tService.list({ page, pageSize, keyword, type });
+  async list(@Query('page') page: number, @Query('pageSize') pageSize: number, @Query('keyword') keyword: string, @Query('type') type: string, @Query('minPrice') minPrice: number, @Query('maxPrice') maxPrice: number, @Query('minRating') minRating: number) {
+    const r = await this.tService.list({ page, pageSize, keyword, type, minPrice, maxPrice, minRating });
     return { success: true, data: r.list, total: r.total };
   }
 
@@ -33,4 +33,7 @@ export class TicketController {
 
   @Put('/status')
   async status(@Body() body: { id: number; status: number }) { const r = await this.tService.updateStatus(body.id, body.status); return r ? { success: true, message: '状态更新' } : { success: false, message: '不存在' }; }
+
+  @Get('/stats')
+  async stats() { const data = await this.tService.stats(); return { success: true, data }; }
 }

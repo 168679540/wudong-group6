@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Menu, Card, Row, Col, Tag, Spin, message, Button, Modal, Descriptions, Select, InputNumber, DatePicker, Space } from 'antd';
+import { Layout, Menu, Card, Row, Col, Tag, Spin, message, Button, Modal, Descriptions, Select, InputNumber, DatePicker, Space, Rate } from 'antd';
 import { CompassOutlined, EnvironmentOutlined, ArrowLeftOutlined, HeartOutlined, HeartFilled, ShoppingCartOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getTicketList, Ticket } from '../api/ticket';
 import { createOrder } from '../api/order';
 import { toggleFavorite, checkFavorite } from '../api/favorite';
+import { getTrafficList, TrafficGuide } from '../api/traffic';
 import CartDrawer from '../components/CartDrawer';
 
 const { Header, Content, Footer } = Layout;
@@ -14,6 +15,9 @@ const PublicTickets: React.FC = () => {
   const [data, setData] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState('');
+  const [minPrice, setMinPrice] = useState<number|undefined>(undefined);
+  const [maxPrice, setMaxPrice] = useState<number|undefined>(undefined);
+  const [minRating, setMinRating] = useState<number>(0);
   const [detail, setDetail] = useState<Ticket | null>(null);
   const [favMap, setFavMap] = useState<Record<number, boolean>>({});
   const [buyTarget, setBuyTarget] = useState<Ticket | null>(null);
@@ -21,13 +25,15 @@ const PublicTickets: React.FC = () => {
   const [qty, setQty] = useState(1);
   const [visitDate, setVisitDate] = useState<any>(null);
   const [buying, setBuying] = useState(false);
+  const [traffic, setTraffic] = useState<TrafficGuide[]>([]);
 
+  useEffect(() => { getTrafficList({ pageSize: 10 }).then((r: any) => { if (r.success) setTraffic(r.data || []); }).catch(() => {}); }, []);
   useEffect(() => {
     setLoading(true);
-    getTicketList({ type: type || undefined, pageSize: 50 }).then((r: any) => {
+    getTicketList({ type: type || undefined, pageSize: 50, minPrice, maxPrice, minRating: minRating || undefined }).then((r: any) => {
       if (r.success) { setData(r.data || []); loadFavs(r.data || []); }
     }).catch(() => message.error('加载失败')).finally(() => setLoading(false));
-  }, [type]);
+  }, [type, minPrice, maxPrice, minRating]);
 
   const loadFavs = async (items: Ticket[]) => { const m: Record<number, boolean> = {}; await Promise.all(items.map(async t => { try { const rr: any = await checkFavorite('ticket', t.id); m[t.id] = rr?.data?.favorited || false; } catch { m[t.id] = false; } })); setFavMap(m); };
   const handleFav = async (t: Ticket) => { const res: any = await toggleFavorite('ticket', t.id); if (res.success) { setFavMap(p => ({ ...p, [t.id]: res.data.favorited })); } };
@@ -57,6 +63,14 @@ const PublicTickets: React.FC = () => {
             <Tag color={type === '门票' ? '#1890ff' : 'default'} style={{ cursor: 'pointer' }} onClick={() => setType('门票')}>🎫 景区门票</Tag>
             <Tag color={type === '路线' ? '#1890ff' : 'default'} style={{ cursor: 'pointer' }} onClick={() => setType('路线')}>🗺️ 旅游路线</Tag>
           </div>
+          <div style={{ marginBottom: 16, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontSize: 13, color: '#666' }}>价格：</span>
+            <InputNumber placeholder="最低" min={0} value={minPrice} onChange={v => setMinPrice(v || undefined)} style={{ width: 100 }} size="small" />
+            <span>—</span>
+            <InputNumber placeholder="最高" min={0} value={maxPrice} onChange={v => setMaxPrice(v || undefined)} style={{ width: 100 }} size="small" />
+            <span style={{ fontSize: 13, color: '#666', marginLeft: 8 }}>评分≥</span>
+            <Rate count={5} value={minRating} onChange={v => setMinRating(v)} style={{ fontSize: 14 }} allowClear />
+          </div>
           {loading ? <Spin size="large" style={{ display: 'block', margin: '80px auto' }} /> : (
             <Row gutter={[20, 20]}>
               {data.map(t => (
@@ -76,6 +90,26 @@ const PublicTickets: React.FC = () => {
             </Row>
           )}
         </div>
+
+        {/* 交通攻略专区 */}
+        {traffic.length > 0 && (
+          <div style={{ background: '#fff', borderRadius: 12, padding: 32, marginTop: 24 }}>
+            <h3 style={{ marginBottom: 16 }}>🚗 交通攻略</h3>
+            <Row gutter={[16, 16]}>
+              {traffic.map(g => (
+                <Col key={g.id} xs={24} sm={12} md={8}>
+                  <Card hoverable size="small" title={<>{g.transportType && <Tag color="blue">{g.transportType}</Tag>} {g.title}</>}>
+                    <div style={{ fontSize: 13, color: '#666' }}>
+                      <div>📍 {g.origin} → {g.destination}</div>
+                      <div>⏱ {g.duration} | 💰 {g.cost}</div>
+                      <div style={{ marginTop: 4 }}>{g.content?.slice(0, 80)}...</div>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </div>
+        )}
       </Content>
       <Modal open={!!detail} onCancel={() => setDetail(null)} footer={[<Button key="back" onClick={() => setDetail(null)}>返回</Button>, <Button key="buy" type="primary" disabled={detail?.stock === 0} onClick={() => { const d = detail; setDetail(null); setTimeout(() => d && openBuy(d), 100); }}>{detail?.type === '门票' ? '立即购票' : '立即预订'} ¥{detail?.price}</Button>]} width={680} title={detail?.name}>
         {detail && (<div><img src={detail.coverImage} alt={detail.name} style={{ width: '100%', maxHeight: 380, objectFit: 'cover', borderRadius: 8, marginBottom: 16 }} onError={e => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/600x400'; }} />

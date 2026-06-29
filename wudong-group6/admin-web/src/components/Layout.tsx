@@ -5,7 +5,7 @@ import {
   DashboardOutlined, TeamOutlined, SettingOutlined, LogoutOutlined,
   AuditOutlined, SafetyCertificateOutlined, PictureOutlined, SoundOutlined,
   ShopOutlined, OrderedListOutlined, DollarCircleOutlined, FileTextOutlined, UserOutlined,
-  SkinOutlined, AppstoreOutlined, EyeOutlined, CoffeeOutlined, HomeOutlined, CompassOutlined, ClockCircleOutlined, ShoppingCartOutlined,
+  SkinOutlined, AppstoreOutlined, EyeOutlined, CoffeeOutlined, HomeOutlined, CompassOutlined, ClockCircleOutlined, ShoppingCartOutlined, EnvironmentOutlined,
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = AntLayout;
@@ -56,6 +56,8 @@ const Layout = () => {
       key: 'xing', icon: <CompassOutlined />, label: '行·线路门票',
       children: [
         { key: '/tickets', icon: <CompassOutlined />, label: '票务管理' },
+        { key: '/ticket-reviews', icon: <EyeOutlined />, label: '票务评价' },
+        { key: '/traffic-guides', icon: <EnvironmentOutlined />, label: '交通攻略' },
       ],
     },
     {
@@ -86,7 +88,7 @@ const Layout = () => {
       '/product-category': 'yi', '/products': 'yi', '/product-reviews': 'yi',
       '/food': 'shi', '/restaurant-reviews': 'shi', '/agro-products': 'shi', '/agro-category': 'shi', '/meal-slots': 'shi',
       '/homestay': 'zhu', '/homestay-reviews': 'zhu',
-      '/tickets': 'xing',
+      '/tickets': 'xing', '/ticket-reviews': 'xing', '/traffic-guides': 'xing',
       '/travel-note': 'she',
       '/application': 'ops', '/merchant': 'ops', '/banner': 'ops', '/announcement': 'ops', '/order': 'ops', '/settlement': 'ops',
     };

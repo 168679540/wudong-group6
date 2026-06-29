@@ -2,7 +2,7 @@ import request from './request';
 
 export interface Ticket {
   id: number; name: string; type: string; coverImage: string;
-  price: number; stock: number; description: string; merchantId: number; status?: number;
+  price: number; stock: number; rating: number; description: string; merchantId: number; status?: number;
 }
 
 export const getTicketList = (params?: any) => request.get('/ticket/list', { params });

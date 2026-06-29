@@ -4,10 +4,11 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 export class Ticket {
   @PrimaryGeneratedColumn({ type: 'int', unsigned: true }) id: number;
   @Column({ type: 'varchar', length: 200 }) name: string;
-  @Column({ type: 'varchar', length: 20 }) type: string; // 门票/路线
+  @Column({ type: 'varchar', length: 20 }) type: string;
   @Column({ name: 'cover_image', type: 'varchar', length: 255, nullable: true }) coverImage: string;
   @Column({ type: 'decimal', precision: 10, scale: 2 }) price: number;
   @Column({ type: 'int', default: 9999 }) stock: number;
+  @Column({ type: 'decimal', precision: 2, scale: 1, default: 5.0 }) rating: number;
   @Column({ type: 'text', nullable: true }) description: string;
   @Column({ name: 'merchant_id', type: 'int', unsigned: true, nullable: true }) merchantId: number;
   @Column({ type: 'tinyint', default: 1 }) status: number;

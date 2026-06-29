@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Space, Tag, Modal, Form, Input, InputNumber, Select, Image, Popconfirm, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { getAdminTicketList, createTicket, updateTicket, deleteTicket, updateTicketStatus, Ticket } from '../api/ticket';
+import request from '../api/request';
+import { Row, Col, Card, Statistic } from 'antd';
+import { TrophyOutlined, DatabaseOutlined, DollarOutlined } from '@ant-design/icons';
 
 const TravelTicketList: React.FC = () => {
   const [data, setData] = useState<Ticket[]>([]);
@@ -18,7 +21,10 @@ const TravelTicketList: React.FC = () => {
       if (r.success) { setData(r.data || []); setPagination(prev => ({ ...prev, current: page, total: r.total || 0 })); }
     }).catch(() => message.error('加载失败')).finally(() => setLoading(false));
   };
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); loadStats(); }, []);
+
+  const [stat, setStat] = useState<any>({ totalStock: 0, avgPrice: 0, topRated: [] });
+  const loadStats = () => { request.get('/ticket/stats').then((r: any) => { if (r.success) setStat(r.data); }).catch(() => {}); };
 
   const openCreate = () => { setEditing(null); form.resetFields(); form.setFieldsValue({ status: 1, type: '门票', price: 0, stock: 9999 }); setModalOpen(true); };
   const openEdit = (t: Ticket) => { setEditing(t); form.setFieldsValue(t); setModalOpen(true); };
@@ -52,6 +58,13 @@ const TravelTicketList: React.FC = () => {
 
   return (
     <div>
+      {stat.totalStock > 0 && (
+        <Row gutter={16} style={{ marginBottom: 16 }}>
+          <Col span={8}><Card size="small"><Statistic title="总库存" value={stat.totalStock} suffix="张" prefix={<DatabaseOutlined />} /></Card></Col>
+          <Col span={8}><Card size="small"><Statistic title="均价" value={stat.avgPrice} suffix="元" precision={0} prefix={<DollarOutlined />} /></Card></Col>
+          <Col span={8}><Card size="small" title={<><TrophyOutlined /> 评分最高</>}>{stat.topRated?.slice(0, 2).map((t: any, i: number) => <div key={i} style={{ fontSize: 12 }}>🏆 {t.name} ⭐{Number(t.rating).toFixed(1)}</div>)}</Card></Col>
+        </Row>
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
         <h2>行·线路门票管理</h2>
         <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>新增票务</Button>
