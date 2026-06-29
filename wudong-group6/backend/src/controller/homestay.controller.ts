@@ -1,21 +1,36 @@
-import { Inject, Controller, Get, Query } from '@midwayjs/core';
+import { Inject, Controller, Get, Post, Put, Del, Body, Query } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 import { HomestayService } from '../service/homestay.service';
 
 @Controller('/api/homestay')
 export class HomestayController {
   @Inject() ctx: Context;
-  @Inject() homestayService: HomestayService;
+  @Inject() hService: HomestayService;
 
   @Get('/list')
   async list(@Query('page') page: number, @Query('pageSize') pageSize: number, @Query('keyword') keyword: string) {
-    const r = await this.homestayService.list({ page, pageSize, keyword });
+    const r = await this.hService.list({ page, pageSize, keyword });
+    return { success: true, data: r.list, total: r.total };
+  }
+
+  @Get('/admin/list')
+  async adminList(@Query('page') page: number, @Query('pageSize') pageSize: number, @Query('keyword') keyword: string, @Query('status') status: number) {
+    const r = await this.hService.adminList({ page, pageSize, keyword, status });
     return { success: true, data: r.list, total: r.total };
   }
 
   @Get('/detail')
-  async detail(@Query('id') id: number) {
-    const p = await this.homestayService.detail(id);
-    return p ? { success: true, data: p } : { success: false, message: '民宿不存在' };
-  }
+  async detail(@Query('id') id: number) { const p = await this.hService.detail(id); return p ? { success: true, data: p } : { success: false, message: '不存在' }; }
+
+  @Post('/create')
+  async create(@Body() body: any) { const r = await this.hService.create(body); return { success: true, message: '创建成功', data: r }; }
+
+  @Put('/update')
+  async update(@Body() body: any) { const { id, ...data } = body; const r = await this.hService.update(id, data); return r ? { success: true, message: '更新成功' } : { success: false, message: '不存在' }; }
+
+  @Del('/delete')
+  async delete(@Query('id') id: number) { const ok = await this.hService.remove(id); return ok ? { success: true, message: '删除成功' } : { success: false, message: '不存在' }; }
+
+  @Put('/status')
+  async status(@Body() body: { id: number; status: number }) { const r = await this.hService.updateStatus(body.id, body.status); return r ? { success: true, message: '状态更新' } : { success: false, message: '不存在' }; }
 }

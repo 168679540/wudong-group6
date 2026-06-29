@@ -1,49 +1,76 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Tag, Spin, message, Button } from 'antd';
-import { getTicketList, Ticket } from '../api/ticket';
-import { createOrder } from '../api/order';
+import { Table, Button, Space, Tag, Modal, Form, Input, InputNumber, Select, Image, Popconfirm, message } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { getAdminTicketList, createTicket, updateTicket, deleteTicket, updateTicketStatus, Ticket } from '../api/ticket';
 
 const TravelTicketList: React.FC = () => {
   const [data, setData] = useState<Ticket[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [type, setType] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState<Ticket | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [form] = Form.useForm();
 
-  useEffect(() => {
+  const fetchData = (page = 1, pageSize = 10) => {
     setLoading(true);
-    getTicketList({ type: type || undefined, pageSize: 50 }).then((r: any) => {
-      if (r.success) setData(r.data);
+    getAdminTicketList({ page, pageSize }).then((r: any) => {
+      if (r.success) { setData(r.data || []); setPagination(prev => ({ ...prev, current: page, total: r.total || 0 })); }
     }).catch(() => message.error('加载失败')).finally(() => setLoading(false));
-  }, [type]);
-
-  const handleBuy = async (t: Ticket) => {
-    try {
-      const res: any = await createOrder({ type: t.type, amount: t.price, merchantId: t.merchantId, itemName: t.name, itemImage: t.coverImage });
-      if (res.success) message.success(`已购买：${t.name}（${res.data.orderNo}）`);
-    } catch { message.error('购买失败'); }
   };
+  useEffect(() => { fetchData(); }, []);
 
-  if (loading) return <Spin size="large" style={{ display: 'block', marginTop: 80 }} />;
+  const openCreate = () => { setEditing(null); form.resetFields(); form.setFieldsValue({ status: 1, type: '门票', price: 0, stock: 9999 }); setModalOpen(true); };
+  const openEdit = (t: Ticket) => { setEditing(t); form.setFieldsValue(t); setModalOpen(true); };
+
+  const handleSave = async () => {
+    try { const vals = await form.validateFields(); setSaving(true);
+      if (editing) { await updateTicket({ ...vals, id: editing.id }); message.success('更新成功'); }
+      else { await createTicket(vals); message.success('创建成功'); }
+      setModalOpen(false); fetchData();
+    } catch (e: any) { if (!e?.errorFields) message.error('保存失败'); } finally { setSaving(false); }
+  };
+  const handleToggle = async (t: Ticket) => { await updateTicketStatus(t.id, t.status === 1 ? 0 : 1); message.success(t.status === 1 ? '已下架' : '已上架'); fetchData(); };
+  const handleDelete = async (id: number) => { await deleteTicket(id); message.success('已删除'); fetchData(); };
+
+  const columns = [
+    { title: 'ID', dataIndex: 'id', width: 50 },
+    { title: '图片', dataIndex: 'coverImage', width: 70, render: (v: string) => <Image src={v} width={50} height={50} style={{ borderRadius: 6, objectFit: 'cover' }} fallback="https://via.placeholder.com/50" /> },
+    { title: '名称', dataIndex: 'name', ellipsis: true },
+    { title: '类型', dataIndex: 'type', width: 70, render: (v: string) => <Tag color={v === '门票' ? 'blue' : 'orange'}>{v}</Tag> },
+    { title: '价格', dataIndex: 'price', width: 80, render: (v: number) => <span style={{ color: '#f5222d', fontWeight: 'bold' }}>¥{v}</span> },
+    { title: '库存', dataIndex: 'stock', width: 60 },
+    { title: '状态', dataIndex: 'status', width: 60, render: (v: number) => <Tag color={v === 1 ? 'green' : 'red'}>{v === 1 ? '上架' : '下架'}</Tag> },
+    { title: '操作', width: 200, render: (_: any, r: Ticket) => (
+      <Space size="small">
+        <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(r)}>编辑</Button>
+        <Button size="small" icon={r.status === 1 ? <EyeInvisibleOutlined /> : <EyeOutlined />} onClick={() => handleToggle(r)}>{r.status === 1 ? '下架' : '上架'}</Button>
+        <Popconfirm title="确定删除？" onConfirm={() => handleDelete(r.id)}><Button size="small" danger icon={<DeleteOutlined />}>删除</Button></Popconfirm>
+      </Space>
+    )},
+  ];
 
   return (
     <div>
-      <h2>线路门票（行）</h2>
-      <div style={{ marginBottom: 16 }}>
-        <Tag color={!type ? '#1890ff' : 'default'} style={{ cursor: 'pointer' }} onClick={() => setType('')}>全部</Tag>
-        <Tag color={type === '门票' ? '#1890ff' : 'default'} style={{ cursor: 'pointer' }} onClick={() => setType('门票')}>门票</Tag>
-        <Tag color={type === '路线' ? '#1890ff' : 'default'} style={{ cursor: 'pointer' }} onClick={() => setType('路线')}>路线</Tag>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+        <h2>行·线路门票管理</h2>
+        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>新增票务</Button>
       </div>
-      <Row gutter={[16, 16]}>
-        {data.map(t => (
-          <Col key={t.id} xs={24} sm={12} md={8} lg={6}>
-            <Card hoverable cover={<img alt={t.name} src={t.coverImage} style={{ height: 200, objectFit: 'cover' }} />}
-              actions={[<Button type="primary" size="small" onClick={() => handleBuy(t)}>{t.type === '门票' ? '购票' : '预订'}</Button>]}>
-              <Card.Meta title={t.name} description={<><Tag color={t.type === '门票' ? 'blue' : 'orange'}>{t.type}</Tag><span style={{ color: '#f5222d', fontSize: 18, fontWeight: 'bold' }}>¥{t.price}</span><br /><span style={{ color: '#999' }}>库存: {t.stock}</span></>} />
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      <Table columns={columns} dataSource={data} loading={loading} rowKey="id" size="middle" pagination={{ ...pagination, showTotal: t => `共 ${t} 条`, onChange: (p, ps) => fetchData(p, ps) }} />
+      <Modal title={editing ? '编辑票务' : '新增票务'} open={modalOpen} onCancel={() => setModalOpen(false)} onOk={handleSave} confirmLoading={saving} width={640}>
+        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="name" label="名称" rules={[{ required: true }]}><Input /></Form.Item>
+          <Space style={{ display: 'flex' }} align="start">
+            <Form.Item name="type" label="类型" rules={[{ required: true }]} style={{ width: 120 }}><Select options={[{ value: '门票', label: '门票' }, { value: '路线', label: '路线' }]} /></Form.Item>
+            <Form.Item name="price" label="价格(元)" rules={[{ required: true }]} style={{ width: 140 }}><InputNumber min={0} style={{ width: '100%' }} /></Form.Item>
+            <Form.Item name="stock" label="库存" rules={[{ required: true }]} style={{ width: 100 }}><InputNumber min={0} style={{ width: '100%' }} /></Form.Item>
+            <Form.Item name="status" label="状态" style={{ width: 100 }}><Select options={[{ value: 1, label: '上架' }, { value: 0, label: '下架' }]} /></Form.Item>
+          </Space>
+          <Form.Item name="coverImage" label="封面图URL"><Input /></Form.Item>
+          <Form.Item name="description" label="描述"><Input.TextArea rows={3} /></Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
-
 export default TravelTicketList;
