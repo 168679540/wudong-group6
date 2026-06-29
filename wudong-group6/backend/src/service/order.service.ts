@@ -57,4 +57,13 @@ export class OrderService {
     order.merchantId = data.merchantId || null;
     return this.orderModel.save(order);
   }
+
+  async ship(id: number, expressCompany: string, expressNo: string): Promise<Order | null> {
+    const order = await this.orderModel.findOne({ where: { id, isDeleted: 0 } });
+    if (!order) return null;
+    order.expressCompany = expressCompany;
+    order.expressNo = expressNo;
+    order.status = 2; // 已确认/已发货
+    return this.orderModel.save(order);
+  }
 }

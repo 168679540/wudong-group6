@@ -46,9 +46,11 @@ const PublicHome: React.FC = () => {
             { key: 'join', label: '商家入驻' },
             { key: 'community', label: '游记社区' },
             { key: 'favorites', label: '我的收藏' },
+            { key: 'orders', label: '我的订单' },
           ]}
           onClick={({ key }) => {
             if (key === 'favorites') { navigate('/pc/favorites'); return; }
+            if (key === 'orders') { navigate('/pc/orders'); return; }
             document.getElementById(key)?.scrollIntoView({ behavior: 'smooth' });
           }}
         />

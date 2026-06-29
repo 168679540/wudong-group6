@@ -29,6 +29,12 @@ export class Order {
   @Column({ name: 'merchant_id', type: 'int', unsigned: true, nullable: true })
   merchantId: number;
 
+  @Column({ name: 'express_company', type: 'varchar', length: 50, nullable: true })
+  expressCompany: string;
+
+  @Column({ name: 'express_no', type: 'varchar', length: 100, nullable: true })
+  expressNo: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

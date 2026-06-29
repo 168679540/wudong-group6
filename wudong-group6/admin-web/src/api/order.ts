@@ -10,6 +10,8 @@ export interface Order {
   merchantId: number;
   itemName?: string;
   itemImage?: string;
+  expressCompany?: string;
+  expressNo?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -20,4 +22,8 @@ export const getOrderList = (params: any) => {
 
 export const createOrder = (data: { type: string; amount: number; userId?: number; merchantId?: number; itemName?: string; itemImage?: string }) => {
   return request.post('/order/create', data);
+};
+
+export const shipOrder = (id: number, expressCompany: string, expressNo: string) => {
+  return request.post('/order/ship', { id, expressCompany, expressNo });
 };

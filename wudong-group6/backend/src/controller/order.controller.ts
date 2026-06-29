@@ -21,4 +21,10 @@ export class OrderController {
     const order = await this.orderService.create(body);
     return { success: true, message: '下单成功', data: order };
   }
+
+  @Post('/ship')
+  async ship(@Body() body: { id: number; expressCompany: string; expressNo: string }) {
+    const order = await this.orderService.ship(body.id, body.expressCompany, body.expressNo);
+    return order ? { success: true, message: '发货成功', data: order } : { success: false, message: '订单不存在' };
+  }
 }

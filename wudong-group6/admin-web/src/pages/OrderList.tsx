@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Select, Image, message } from 'antd';
-import { getOrderList, Order } from '../api/order';
+import { Table, Tag, Select, Image, message, Button, Space, Modal, Input, Form } from 'antd';
+import { TruckOutlined } from '@ant-design/icons';
+import { getOrderList, shipOrder, Order } from '../api/order';
 
 const { Option } = Select;
 
-// 格式化时间，解决 "000Z" 问题
 const formatTime = (dateStr: string) => {
   if (!dateStr) return '-';
   const d = new Date(dateStr);
@@ -21,17 +21,13 @@ const formatTime = (dateStr: string) => {
 const statusMap: Record<number, { text: string; color: string }> = {
   0: { text: '待支付', color: 'orange' },
   1: { text: '已支付', color: 'blue' },
-  2: { text: '已确认', color: 'green' },
+  2: { text: '已发货', color: 'green' },
   3: { text: '已完成', color: 'cyan' },
   4: { text: '已取消', color: 'red' },
 };
 
 const typeColors: Record<string, string> = {
-  '商品': 'blue',
-  '餐位': 'green',
-  '住宿': 'orange',
-  '门票': 'purple',
-  '路线': 'magenta',
+  '商品': 'blue', '餐位': 'green', '住宿': 'orange', '门票': 'purple', '路线': 'magenta',
 };
 
 const OrderList: React.FC = () => {
@@ -40,145 +36,62 @@ const OrderList: React.FC = () => {
   const [filterType, setFilterType] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<number | undefined>(undefined);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [shipModal, setShipModal] = useState<{ open: boolean; id: number }>({ open: false, id: 0 });
+  const [shipForm] = Form.useForm();
 
   const fetchOrders = async (page = 1, pageSize = 10) => {
     setLoading(true);
     try {
-      const res: any = await getOrderList({
-        page,
-        pageSize,
-        type: filterType || undefined,
-        status: filterStatus,
-      });
-      if (res.success) {
-        setOrders(res.data || []);
-        setPagination({ current: page, pageSize, total: res.total || 0 });
-      }
-    } catch (err) {
-      message.error('获取订单列表失败');
-    }
+      const res: any = await getOrderList({ page, pageSize, type: filterType || undefined, status: filterStatus });
+      if (res.success) { setOrders(res.data || []); setPagination({ current: page, pageSize, total: res.total || 0 }); }
+    } catch { message.error('获取订单列表失败'); }
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchOrders(1, pagination.pageSize);
-  }, [filterType, filterStatus]);
+  useEffect(() => { fetchOrders(1, pagination.pageSize); }, [filterType, filterStatus]);
+
+  const handleShip = async () => {
+    const vals = await shipForm.validateFields();
+    await shipOrder(shipModal.id, vals.expressCompany, vals.expressNo);
+    message.success('发货成功'); setShipModal({ open: false, id: 0 }); fetchOrders(pagination.current, pagination.pageSize);
+  };
 
   const columns = [
-    {
-      title: '序号',
-      key: 'index',
-      width: 60,
-      render: (_: any, __: any, index: number) =>
-        (pagination.current - 1) * pagination.pageSize + index + 1,
+    { title: '序号', key: 'index', width: 55, render: (_: any, __: any, i: number) => (pagination.current - 1) * pagination.pageSize + i + 1 },
+    { title: '商品图', dataIndex: 'itemImage', key: 'itemImage', width: 70,
+      render: (v: string) => <Image src={v || 'https://via.placeholder.com/50'} width={50} height={50} style={{ borderRadius: 6, objectFit: 'cover' }} fallback="https://via.placeholder.com/50" /> },
+    { title: '商品名称', dataIndex: 'itemName', key: 'itemName', ellipsis: true, render: (v: string) => v || '-' },
+    { title: '订单号', dataIndex: 'orderNo', key: 'orderNo', width: 195 },
+    { title: '类型', dataIndex: 'type', key: 'type', width: 65, render: (v: string) => <Tag color={typeColors[v] || 'default'}>{v}</Tag> },
+    { title: '状态', dataIndex: 'status', key: 'status', width: 70, render: (v: number) => { const s = statusMap[v] || { text: '未知', color: 'default' }; return <Tag color={s.color}>{s.text}</Tag>; } },
+    { title: '金额', dataIndex: 'amount', key: 'amount', width: 85, render: (v: number) => <span style={{ color: '#f5222d', fontWeight: 'bold' }}>¥{v}</span> },
+    { title: '物流', key: 'express', width: 160, render: (_: any, r: Order) =>
+      r.expressNo ? <span style={{ fontSize: 12 }}>{r.expressCompany}<br/>{r.expressNo}</span> :
+        (r.type === '商品' && r.status === 1) ? <Button size="small" icon={<TruckOutlined />} onClick={() => { shipForm.resetFields(); setShipModal({ open: true, id: r.id }); }}>发货</Button> :
+        <span style={{ color: '#999' }}>-</span>
     },
-    {
-      title: '商品图',
-      dataIndex: 'itemImage',
-      key: 'itemImage',
-      width: 80,
-      render: (img: string) => (
-        <Image
-          src={img || 'https://via.placeholder.com/60x60?text=无图'}
-          alt="商品图"
-          width={60}
-          height={60}
-          style={{ borderRadius: 6, objectFit: 'cover' }}
-          fallback="https://via.placeholder.com/60x60?text=无图"
-        />
-      ),
-    },
-    {
-      title: '商品名称',
-      dataIndex: 'itemName',
-      key: 'itemName',
-      ellipsis: true,
-      render: (name: string) => name || '-',
-    },
-    { title: '订单号', dataIndex: 'orderNo', key: 'orderNo', width: 200 },
-    {
-      title: '类型',
-      dataIndex: 'type',
-      key: 'type',
-      width: 80,
-      render: (type: string) => (
-        <Tag color={typeColors[type] || 'default'}>{type}</Tag>
-      ),
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
-      width: 80,
-      render: (status: number) => {
-        const s = statusMap[status] || { text: '未知', color: 'default' };
-        return <Tag color={s.color}>{s.text}</Tag>;
-      },
-    },
-    {
-      title: '金额',
-      dataIndex: 'amount',
-      key: 'amount',
-      width: 100,
-      render: (v: number) => (
-        <span style={{ color: '#f5222d', fontWeight: 'bold', fontSize: 15 }}>¥{v}</span>
-      ),
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      width: 170,
-      render: (v: string) => formatTime(v),
-    },
+    { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 155, render: (v: string) => formatTime(v) },
   ];
 
   return (
     <div>
       <h2>全局订单</h2>
-
-      <div style={{ marginBottom: 16 }}>
-        <Select
-          placeholder="订单类型"
-          allowClear
-          style={{ width: 120, marginRight: 8 }}
-          value={filterType || undefined}
-          onChange={(v) => setFilterType(v || '')}
-        >
-          <Option value="商品">商品</Option>
-          <Option value="餐位">餐位</Option>
-          <Option value="住宿">住宿</Option>
-          <Option value="门票">门票</Option>
-          <Option value="路线">路线</Option>
+      <Space style={{ marginBottom: 16 }}>
+        <Select placeholder="订单类型" allowClear style={{ width: 110 }} value={filterType || undefined} onChange={v => setFilterType(v || '')}>
+          <Option value="商品">商品</Option><Option value="餐位">餐位</Option><Option value="住宿">住宿</Option><Option value="门票">门票</Option><Option value="路线">路线</Option>
         </Select>
-        <Select
-          placeholder="订单状态"
-          allowClear
-          style={{ width: 120 }}
-          value={filterStatus}
-          onChange={(v) => setFilterStatus(v)}
-        >
-          <Option value={0}>待支付</Option>
-          <Option value={1}>已支付</Option>
-          <Option value={2}>已确认</Option>
-          <Option value={3}>已完成</Option>
-          <Option value={4}>已取消</Option>
+        <Select placeholder="订单状态" allowClear style={{ width: 110 }} value={filterStatus} onChange={v => setFilterStatus(v)}>
+          <Option value={0}>待支付</Option><Option value={1}>已支付</Option><Option value={2}>已发货</Option><Option value={3}>已完成</Option><Option value={4}>已取消</Option>
         </Select>
-      </div>
-
-      <Table
-        columns={columns}
-        dataSource={orders}
-        loading={loading}
-        rowKey="id"
-        size="middle"
-        pagination={{
-          ...pagination,
-          showSizeChanger: true,
-          showTotal: (total) => `共 ${total} 条`,
-          onChange: (page, pageSize) => fetchOrders(page, pageSize),
-        }}
-      />
+      </Space>
+      <Table columns={columns} dataSource={orders} loading={loading} rowKey="id" size="middle"
+        pagination={{ ...pagination, showTotal: t => `共 ${t} 条`, onChange: (p, ps) => fetchOrders(p, ps) }} />
+      <Modal title="发货" open={shipModal.open} onCancel={() => setShipModal({ open: false, id: 0 })} onOk={handleShip}>
+        <Form form={shipForm} layout="vertical" style={{ marginTop: 16 }}>
+          <Form.Item name="expressCompany" label="快递公司" rules={[{ required: true }]}><Input placeholder="如：顺丰速运" /></Form.Item>
+          <Form.Item name="expressNo" label="快递单号" rules={[{ required: true }]}><Input placeholder="SF1234567890" /></Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

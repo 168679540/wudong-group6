@@ -1,16 +1,17 @@
 import { Inject, Controller, Get, Post, Put, Del, Body, Query } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 import { ProductService } from '../service/product.service';
+import { Product } from '../entity/product.entity';
 
 @Controller('/api/product')
 export class ProductController {
   @Inject() ctx: Context;
   @Inject() productService: ProductService;
 
-  /** PC端列表（仅上架商品） */
+  /** PC端列表（仅上架商品，支持价格筛选+排序） */
   @Get('/list')
-  async list(@Query('page') page: number, @Query('pageSize') pageSize: number, @Query('keyword') keyword: string, @Query('category') category: string) {
-    const r = await this.productService.list({ page, pageSize, keyword, category });
+  async list(@Query('page') page: number, @Query('pageSize') pageSize: number, @Query('keyword') keyword: string, @Query('category') category: string, @Query('minPrice') minPrice: number, @Query('maxPrice') maxPrice: number, @Query('sort') sort: string) {
+    const r = await this.productService.list({ page, pageSize, keyword, category, minPrice, maxPrice, sort });
     return { success: true, data: r.list, total: r.total };
   }
 
@@ -56,5 +57,11 @@ export class ProductController {
   async stats() {
     const data = await this.productService.stats();
     return { success: true, data };
+  }
+
+  @Post('/batch-create')
+  async batchCreate(@Body() body: { items: Partial<Product>[] }) {
+    const count = await this.productService.batchCreate(body.items || []);
+    return { success: true, message: `成功导入 ${count} 件商品`, data: { count } };
   }
 }

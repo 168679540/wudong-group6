@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Space, Tag, Modal, Form, Input, InputNumber, Select, Image, Popconfirm, message, Card, Row, Col, Statistic, Alert, List as AntList } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, EyeInvisibleOutlined, WarningOutlined, TrophyOutlined, DollarOutlined } from '@ant-design/icons';
 import { getAdminProductList, createProduct, updateProduct, deleteProduct, updateProductStatus, getProductStats, Product } from '../api/product';
+import request from '../api/request';
 
 const CATS = ['银饰', '蜡染', '刺绣', '服饰', '其他'];
 
@@ -11,6 +12,9 @@ const ProductList: React.FC = () => {
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
   const [modalOpen, setModalOpen] = useState(false);
   const [stats, setStats] = useState<{ hotTop: Product[]; lowStock: Product[]; totalSold: number } | null>(null);
+  const [importModal, setImportModal] = useState(false);
+  const [importJson, setImportJson] = useState('');
+  const [importing, setImporting] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [saving, setSaving] = useState(false);
   const [form] = Form.useForm();
@@ -91,6 +95,18 @@ const ProductList: React.FC = () => {
     } catch { message.error('删除失败'); }
   };
 
+  const handleBatchImport = async () => {
+    try {
+      const items = JSON.parse(importJson);
+      if (!Array.isArray(items)) { message.error('请输入JSON数组'); return; }
+      setImporting(true);
+      const res: any = await request.post('/product/batch-create', { items });
+      if (res.success) { message.success(res.message); setImportModal(false); setImportJson(''); fetchData(); loadStats(); }
+      else message.error(res.message || '导入失败');
+    } catch (e: any) { message.error(e.message || 'JSON格式错误'); }
+    finally { setImporting(false); }
+  };
+
   const columns = [
     { title: 'ID', dataIndex: 'id', key: 'id', width: 60 },
     {
@@ -154,7 +170,10 @@ const ProductList: React.FC = () => {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2 style={{ margin: 0 }}>衣·非遗商品管理</h2>
-        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>新增商品</Button>
+        <Space>
+          <Button onClick={() => { setImportJson(''); setImportModal(true); }}>批量导入</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>新增商品</Button>
+        </Space>
       </div>
 
       <Table columns={columns} dataSource={data} loading={loading} rowKey="id" size="middle"
@@ -190,6 +209,15 @@ const ProductList: React.FC = () => {
             <Input.TextArea rows={3} placeholder='{"尺寸":["小号","中号","大号"],"颜色":["原色","红色","蓝色"]}' />
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* 批量导入弹窗 */}
+      <Modal title="批量导入商品" open={importModal} onCancel={() => setImportModal(false)} onOk={handleBatchImport} confirmLoading={importing} width={600}>
+        <div style={{ marginTop: 16 }}>
+          <p style={{ color: '#666', fontSize: 13 }}>粘贴JSON数组，每项包含 name/category/price/stock/coverImage/description 字段</p>
+          <Input.TextArea rows={12} value={importJson} onChange={e => setImportJson(e.target.value)}
+            placeholder={`[{"name":"商品名","category":"银饰","price":100,"stock":50,"coverImage":"/images/xxx.jpg","description":"描述"}]`} />
+        </div>
       </Modal>
     </div>
   );

@@ -21,6 +21,9 @@ const PublicProduct: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [cat, setCat] = useState('');
   const [search, setSearch] = useState('');
+  const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
+  const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
+  const [sortBy, setSortBy] = useState<string>('');
   const [cats, setCats] = useState<string[]>(['全部', '银饰', '蜡染', '刺绣', '服饰', '其他']);
   const [detail, setDetail] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<ProductReview[]>([]);
@@ -47,10 +50,10 @@ const PublicProduct: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
-    getProductList({ category: cat || undefined, keyword: search || undefined, pageSize: 50 }).then((r: any) => {
+    getProductList({ category: cat || undefined, keyword: search || undefined, pageSize: 50, minPrice, maxPrice, sort: sortBy || undefined }).then((r: any) => {
       if (r.success) { setData(r.data || []); loadFavStatus(r.data || []); }
     }).catch(() => message.error('加载失败')).finally(() => setLoading(false));
-  }, [cat, search]);
+  }, [cat, search, minPrice, maxPrice, sortBy]);
 
   const loadFavStatus = async (items: Product[]) => {
     const m: Record<number, boolean> = {};
@@ -158,6 +161,14 @@ const PublicProduct: React.FC = () => {
           </div>
           <div style={{ marginBottom: 24 }}>
             {cats.map(c => <Tag key={c} color={c === (cat || '全部') ? '#1890ff' : 'default'} style={{ cursor: 'pointer', padding: '4px 16px', fontSize: 14, marginBottom: 8 }} onClick={() => setCat(c === '全部' ? '' : c)}>{c}</Tag>)}
+          </div>
+          <div style={{ marginBottom: 20, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontSize: 13, color: '#666' }}>价格：</span>
+            <InputNumber placeholder="最低" min={0} value={minPrice} onChange={v => setMinPrice(v || undefined)} style={{ width: 110 }} size="small" />
+            <span>—</span>
+            <InputNumber placeholder="最高" min={0} value={maxPrice} onChange={v => setMaxPrice(v || undefined)} style={{ width: 110 }} size="small" />
+            <Select placeholder="排序" allowClear value={sortBy || undefined} onChange={v => setSortBy(v || '')} style={{ width: 130 }} size="small"
+              options={[{ value: 'sales', label: '按销量' }, { value: 'price_asc', label: '价格从低到高' }, { value: 'price_desc', label: '价格从高到低' }]} />
           </div>
           {loading ? <Spin size="large" style={{ display: 'block', margin: '80px auto' }} /> : (
             <Row gutter={[20, 20]}>

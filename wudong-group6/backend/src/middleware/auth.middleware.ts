@@ -28,6 +28,7 @@ const WHITE_LIST = [
   '/api/ticket/list',
   '/api/ticket/detail',
   '/api/order/create',
+  '/api/order/list',
   '/api/product-category/active',
   '/api/product-review/list',
   '/api/product-review/create',
