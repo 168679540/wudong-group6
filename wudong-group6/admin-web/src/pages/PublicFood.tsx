@@ -1,13 +1,12 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Layout, Menu, Card, Row, Col, Spin, message, Button, Modal, Descriptions, Tag, Rate, Input, InputNumber, DatePicker, Space, Select } from 'antd';
-import { EnvironmentOutlined, PhoneOutlined, ArrowLeftOutlined, CoffeeOutlined, HeartOutlined, HeartFilled, ShoppingCartOutlined, AimOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { EnvironmentOutlined, ArrowLeftOutlined, CoffeeOutlined, HeartOutlined, HeartFilled, ShoppingCartOutlined, AimOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getRestaurantList, Restaurant } from '../api/restaurant';
 import { createOrder } from '../api/order';
 import { toggleFavorite, checkFavorite } from '../api/favorite';
 import { getMealSlots, MealSlot } from '../api/mealSlot';
 import { getAgroProductList, AgroProduct } from '../api/agroProduct';
-import { useCart } from '../components/CartContext';
 import CartDrawer from '../components/CartDrawer';
 import request from '../api/request';
 
