@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Layout, Menu, Card, Row, Col, Spin, message, Button, Modal, Descriptions, Tag, Rate, Input, InputNumber, DatePicker, Space, Select } from 'antd';
-import { EnvironmentOutlined, PhoneOutlined, ArrowLeftOutlined, CoffeeOutlined, HeartOutlined, HeartFilled, ShoppingCartOutlined } from '@ant-design/icons';
+import { EnvironmentOutlined, PhoneOutlined, ArrowLeftOutlined, CoffeeOutlined, HeartOutlined, HeartFilled, ShoppingCartOutlined, AimOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getRestaurantList, Restaurant } from '../api/restaurant';
 import { createOrder } from '../api/order';
@@ -37,6 +37,7 @@ const PublicFood: React.FC = () => {
   // 评价
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewLoading, setReviewLoading] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   const [myRating, setMyRating] = useState(5);
   const [myContent, setMyContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -88,8 +89,32 @@ const PublicFood: React.FC = () => {
       </Header>
       <Content style={{ padding: '32px 80px', minHeight: '80vh', background: '#f5f5f5' }}>
         <div style={{ background: '#fff', borderRadius: 12, padding: 32 }}>
-          <h2 style={{ marginBottom: 24 }}>🍽️ 食·餐饮美食</h2>
-          {loading ? <Spin size="large" style={{ display: 'block', margin: '80px auto' }} /> : (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
+            <h2 style={{ margin: 0 }}>🍽️ 食·餐饮美食</h2>
+            <Button icon={showMap ? <UnorderedListOutlined /> : <AimOutlined />} onClick={() => setShowMap(!showMap)}>
+              {showMap ? '列表模式' : '地图模式'}
+            </Button>
+          </div>
+
+          {/* 地图模式 */}
+          {showMap && !loading && (
+            <div style={{ marginBottom: 24, borderRadius: 12, overflow: 'hidden', border: '2px solid #1890ff' }}>
+              <iframe
+                title="乌东美食地图"
+                width="100%"
+                height="450"
+                frameBorder="0"
+                scrolling="no"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=108.41,26.35,108.45,26.38&layer=mapnik&marker=26.363,108.432&marker=26.361,108.431&marker=26.359,108.429"
+                style={{ border: 0 }}
+              />
+              <div style={{ background: '#fff', padding: '8px 12px', fontSize: 13, color: '#666' }}>
+                📍 乌东苗寨美食分布 — ① 乌东苗家酸汤鱼 ② 苗寨长桌宴 ③ 山里人家农家菜
+              </div>
+            </div>
+          )}
+
+          {loading ? <Spin size="large" style={{ display: 'block', margin: '80px auto' }} /> : !showMap && (
             <Row gutter={[20, 20]}>
               {data.map(r => (
                 <Col key={r.id} xs={24} sm={12} md={8} lg={8}>
@@ -110,7 +135,7 @@ const PublicFood: React.FC = () => {
         </div>
 
         {/* 农产品特产专区 */}
-        {agro.length > 0 && (
+        {!showMap && agro.length > 0 && (
           <div style={{ background: '#fff', borderRadius: 12, padding: 32, marginTop: 24 }}>
             <h3 style={{ marginBottom: 16 }}>🌾 农产品特产</h3>
             <Row gutter={[16, 16]}>
