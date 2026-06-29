@@ -5,7 +5,7 @@ import {
   DashboardOutlined, TeamOutlined, SettingOutlined, LogoutOutlined,
   AuditOutlined, SafetyCertificateOutlined, PictureOutlined, SoundOutlined,
   ShopOutlined, OrderedListOutlined, DollarCircleOutlined, FileTextOutlined, UserOutlined,
-  SkinOutlined, AppstoreOutlined, EyeOutlined, CoffeeOutlined, HomeOutlined, CompassOutlined,
+  SkinOutlined, AppstoreOutlined, EyeOutlined, CoffeeOutlined, HomeOutlined, CompassOutlined, ClockCircleOutlined, ShoppingCartOutlined,
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = AntLayout;
@@ -33,6 +33,8 @@ const Layout = () => {
     { key: '/product-reviews', icon: <EyeOutlined />, label: '商品评价管理' },
     { type: 'divider' } as const,
     { key: '/food', icon: <CoffeeOutlined />, label: '食·餐饮美食' },
+    { key: '/agro-products', icon: <ShoppingCartOutlined />, label: '农产品特产' },
+    { key: '/meal-slots', icon: <ClockCircleOutlined />, label: '餐位时段管理' },
     { key: '/homestay', icon: <HomeOutlined />, label: '住·民宿住宿' },
     { key: '/tickets', icon: <CompassOutlined />, label: '行·线路门票' },
   ];

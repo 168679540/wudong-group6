@@ -35,6 +35,9 @@ const WHITE_LIST = [
   '/api/favorite/list',
   '/api/favorite/check',
   '/api/favorite/toggle',
+  '/api/agro-product/list',
+  '/api/agro-product/detail',
+  '/api/meal-slot/list',
 ];
 
 @Middleware()

@@ -23,6 +23,8 @@ import TravelTicketList from './pages/TravelTicketList';
 import CommunityList from './pages/CommunityList';
 import CategoryList from './pages/CategoryList';
 import ReviewList from './pages/ReviewList';
+import AgroProductList from './pages/AgroProductList';
+import MealSlotList from './pages/MealSlotList';
 import MyFavorites from './pages/MyFavorites';
 import MyOrders from './pages/MyOrders';
 import PublicHome from './pages/PublicHome';
@@ -80,6 +82,8 @@ function App() {
             <Route path="product-category" element={<CategoryList />} />
             <Route path="products" element={<ProductList />} />
             <Route path="product-reviews" element={<ReviewList />} />
+            <Route path="agro-products" element={<AgroProductList />} />
+            <Route path="meal-slots" element={<MealSlotList />} />
             <Route path="food" element={<FoodList />} />
             <Route path="homestay" element={<HomestayList />} />
             <Route path="tickets" element={<TravelTicketList />} />

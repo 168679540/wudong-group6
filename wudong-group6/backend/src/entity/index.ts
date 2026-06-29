@@ -7,3 +7,5 @@ export { Banner } from './banner.entity';
 export { ProductCategory } from './product-category.entity';
 export { ProductReview } from './product-review.entity';
 export { UserFavorite } from './user-favorite.entity';
+export { AgroProduct } from './agro-product.entity';
+export { MealSlot } from './meal-slot.entity';

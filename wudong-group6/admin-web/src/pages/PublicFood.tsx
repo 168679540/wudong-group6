@@ -4,8 +4,9 @@ import { EnvironmentOutlined, PhoneOutlined, ArrowLeftOutlined, CoffeeOutlined, 
 import { useNavigate } from 'react-router-dom';
 import { getRestaurantList, Restaurant } from '../api/restaurant';
 import { createOrder } from '../api/order';
-import { getProductReviews, createReview, ProductReview } from '../api/review';
 import { toggleFavorite, checkFavorite } from '../api/favorite';
+import { getMealSlots, MealSlot } from '../api/mealSlot';
+import { getAgroProductList, AgroProduct } from '../api/agroProduct';
 import CartDrawer from '../components/CartDrawer';
 
 const { Header, Content, Footer } = Layout;
@@ -16,18 +17,20 @@ const PublicFood: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [detail, setDetail] = useState<Restaurant | null>(null);
   const [favMap, setFavMap] = useState<Record<number, boolean>>({});
-  const [reviews, setReviews] = useState<ProductReview[]>([]);
+  const [agro, setAgro] = useState<AgroProduct[]>([]);
 
   // booking
   const [bookTarget, setBookTarget] = useState<Restaurant | null>(null);
+  const [slots, setSlots] = useState<MealSlot[]>([]);
   const [partySize, setPartySize] = useState(2);
   const [reserveTime, setReserveTime] = useState<any>(null);
   const [specialReq, setSpecialReq] = useState('');
   const [booking, setBooking] = useState(false);
 
   useEffect(() => {
-    getRestaurantList({ pageSize: 50 }).then((r: any) => {
+    Promise.all([getRestaurantList({ pageSize: 50 }), getAgroProductList({ pageSize: 50 })]).then(([r, a]: any[]) => {
       if (r.success) { setData(r.data || []); loadFavs(r.data || []); }
+      if (a.success) setAgro(a.data || []);
     }).catch(() => message.error('加载失败')).finally(() => setLoading(false));
   }, []);
 
@@ -36,7 +39,10 @@ const PublicFood: React.FC = () => {
 
   const openDetail = (r: Restaurant) => { setDetail(r); };
 
-  const openBook = (r: Restaurant) => { setBookTarget(r); setPartySize(2); setReserveTime(null); setSpecialReq(''); };
+  const openBook = (r: Restaurant) => {
+    setBookTarget(r); setPartySize(2); setReserveTime(null); setSpecialReq('');
+    getMealSlots(r.id).then((res: any) => { if (res.success) setSlots(res.data || []); }).catch(() => setSlots([]));
+  };
   const handleBook = async () => {
     if (!bookTarget || !reserveTime) { message.warning('请选择预约时间'); return; }
     setBooking(true);
@@ -79,6 +85,25 @@ const PublicFood: React.FC = () => {
             </Row>
           )}
         </div>
+
+        {/* 农产品特产专区 */}
+        {agro.length > 0 && (
+          <div style={{ background: '#fff', borderRadius: 12, padding: 32, marginTop: 24 }}>
+            <h3 style={{ marginBottom: 16 }}>🌾 农产品特产</h3>
+            <Row gutter={[16, 16]}>
+              {agro.map(a => (
+                <Col key={a.id} xs={24} sm={12} md={6}>
+                  <Card hoverable cover={<img src={a.coverImage} style={{ height: 180, objectFit: 'cover' }} alt={a.name} />}
+                    actions={[<Button type="primary" size="small" onClick={async () => {
+                      try { const res: any = await createOrder({ type: '商品', amount: Number(a.price), merchantId: a.merchantId, itemName: a.name, itemImage: a.coverImage }); if (res.success) message.success(`购买成功！${res.data.orderNo}`); else message.error(res.message || '下单失败'); } catch { message.error('下单失败'); }
+                    }}>立即购买</Button>]}>
+                    <Card.Meta title={a.name} description={<><Tag color="green">{a.category}</Tag><br /><span style={{ color: '#f5222d', fontSize: 18, fontWeight: 'bold' }}>¥{a.price}</span><br /><span style={{ color: '#666', fontSize: 12 }}>{a.description?.slice(0, 40)}</span></>} />
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </div>
+        )}
       </Content>
       <Modal open={!!detail} onCancel={() => setDetail(null)} footer={[<Button key="back" onClick={() => setDetail(null)}>返回</Button>, <Button key="book" type="primary" onClick={() => { const d = detail; setDetail(null); setTimeout(() => d && openBook(d), 100); }}>预订餐位 ¥{detail?.avgPrice}/人</Button>]} width={680} title={detail?.name}>
         {detail && (<div><img src={detail.coverImage} alt={detail.name} style={{ width: '100%', maxHeight: 360, objectFit: 'cover', borderRadius: 8, marginBottom: 16 }} onError={e => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/600x400'; }} />
@@ -86,6 +111,7 @@ const PublicFood: React.FC = () => {
       </Modal>
       <Modal open={!!bookTarget} onCancel={() => setBookTarget(null)} footer={[<Button key="back" onClick={() => setBookTarget(null)}>返回</Button>, <Button key="ok" type="primary" loading={booking} onClick={handleBook}>确认预订 ¥{((Number(bookTarget?.avgPrice) || 0) * partySize).toFixed(2)}</Button>]} width={480} title={`预订 - ${bookTarget?.name}`}>
         {bookTarget && (<div style={{ padding: '16px 0' }}>
+          <div style={{ marginBottom: 16 }}><span style={{ fontWeight: 'bold' }}>可选时段</span>{slots.length > 0 && <div style={{ marginTop: 8, display: 'flex', gap: 8, flexWrap: 'wrap' }}>{slots.map(s => <Tag key={s.id} color="blue" style={{ cursor: 'pointer', padding: '4px 12px' }}>{s.name}({s.startTime}-{s.endTime}, 限{s.maxBookings}人)</Tag>)}</div>}</div>
           <div style={{ marginBottom: 16 }}><span style={{ fontWeight: 'bold' }}>用餐人数</span><InputNumber min={1} max={20} value={partySize} onChange={v => setPartySize(v || 1)} style={{ width: '100%', marginTop: 8 }} /></div>
           <div style={{ marginBottom: 16 }}><span style={{ fontWeight: 'bold' }}>预约时间</span><DatePicker showTime format="YYYY-MM-DD HH:mm" value={reserveTime} onChange={setReserveTime} style={{ width: '100%', marginTop: 8 }} placeholder="选择用餐时间" /></div>
           <div style={{ marginBottom: 16 }}><span style={{ fontWeight: 'bold' }}>特殊要求</span><Input.TextArea rows={2} value={specialReq} onChange={e => setSpecialReq(e.target.value)} placeholder="如：过敏食物、包间需求" style={{ marginTop: 8 }} /></div>
