@@ -30,6 +30,8 @@ import RestaurantReviewList from './pages/RestaurantReviewList';
 import HomestayReviewList from './pages/HomestayReviewList';
 import TrafficGuideList from './pages/TrafficGuideList';
 import TicketReviewList from './pages/TicketReviewList';
+import CommentAdminList from './pages/CommentAdminList';
+import TopicList from './pages/TopicList';
 import MyFavorites from './pages/MyFavorites';
 import MyOrders from './pages/MyOrders';
 import PublicHome from './pages/PublicHome';
@@ -94,6 +96,8 @@ function App() {
             <Route path="homestay-reviews" element={<HomestayReviewList />} />
             <Route path="ticket-reviews" element={<TicketReviewList />} />
             <Route path="traffic-guides" element={<TrafficGuideList />} />
+            <Route path="comment-admin" element={<CommentAdminList />} />
+            <Route path="topics" element={<TopicList />} />
             <Route path="food" element={<FoodList />} />
             <Route path="homestay" element={<HomestayList />} />
             <Route path="tickets" element={<TravelTicketList />} />

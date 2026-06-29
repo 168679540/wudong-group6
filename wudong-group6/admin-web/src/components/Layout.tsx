@@ -5,7 +5,7 @@ import {
   DashboardOutlined, TeamOutlined, SettingOutlined, LogoutOutlined,
   AuditOutlined, SafetyCertificateOutlined, PictureOutlined, SoundOutlined,
   ShopOutlined, OrderedListOutlined, DollarCircleOutlined, FileTextOutlined, UserOutlined,
-  SkinOutlined, AppstoreOutlined, EyeOutlined, CoffeeOutlined, HomeOutlined, CompassOutlined, ClockCircleOutlined, ShoppingCartOutlined, EnvironmentOutlined,
+  SkinOutlined, AppstoreOutlined, EyeOutlined, CoffeeOutlined, HomeOutlined, CompassOutlined, ClockCircleOutlined, ShoppingCartOutlined, EnvironmentOutlined, CommentOutlined, TagOutlined,
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = AntLayout;
@@ -64,6 +64,8 @@ const Layout = () => {
       key: 'she', icon: <FileTextOutlined />, label: '社区·游记',
       children: [
         { key: '/travel-note', icon: <FileTextOutlined />, label: '游记审核' },
+        { key: '/comment-admin', icon: <CommentOutlined />, label: '评论管理' },
+        { key: '/topics', icon: <TagOutlined />, label: '话题管理' },
       ],
     },
     { type: 'divider' },
@@ -89,7 +91,7 @@ const Layout = () => {
       '/food': 'shi', '/restaurant-reviews': 'shi', '/agro-products': 'shi', '/agro-category': 'shi', '/meal-slots': 'shi',
       '/homestay': 'zhu', '/homestay-reviews': 'zhu',
       '/tickets': 'xing', '/ticket-reviews': 'xing', '/traffic-guides': 'xing',
-      '/travel-note': 'she',
+      '/travel-note': 'she', '/comment-admin': 'she', '/topics': 'she',
       '/application': 'ops', '/merchant': 'ops', '/banner': 'ops', '/announcement': 'ops', '/order': 'ops', '/settlement': 'ops',
     };
     return parentMap[path] ? [parentMap[path]] : [];

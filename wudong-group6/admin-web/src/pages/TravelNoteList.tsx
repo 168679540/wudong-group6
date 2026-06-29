@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Tag, Space, Modal, message, Input, Image } from 'antd';
-import { EyeOutlined, LikeOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { Table, Button, Tag, Space, Modal, message, Input, Image, Row, Col, Card, Statistic } from 'antd';
+import { EyeOutlined, LikeOutlined, CheckOutlined, CloseOutlined, FileTextOutlined, CommentOutlined } from '@ant-design/icons';
 import { getTravelNoteList, approveTravelNote, rejectTravelNote, takeDownTravelNote, deleteTravelNote, TravelNote } from '../api/travelNote';
+import request from '../api/request';
 
 const TravelNoteList: React.FC = () => {
   const [data, setData] = useState<TravelNote[]>([]);
@@ -27,9 +28,9 @@ const TravelNoteList: React.FC = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [filterStatus]);
+  useEffect(() => { fetchData(); loadStats(); }, [filterStatus]);
+  const [stat, setStat] = useState<any>({ totalNotes: 0, totalViews: 0, totalLikes: 0, totalComments: 0 });
+  const loadStats = () => { request.get('/community/stats').then((r: any) => { if (r.success) setStat(r.data); }).catch(() => {}); };
 
   const handleApprove = async (id: number) => {
     try {
@@ -134,6 +135,14 @@ const TravelNoteList: React.FC = () => {
 
   return (
     <div>
+      {stat.totalNotes > 0 && (
+        <Row gutter={16} style={{ marginBottom: 16 }}>
+          <Col span={6}><Card size="small"><Statistic title="游记总数" value={stat.totalNotes} prefix={<FileTextOutlined />} /></Card></Col>
+          <Col span={6}><Card size="small"><Statistic title="总浏览" value={stat.totalViews} prefix={<EyeOutlined />} /></Card></Col>
+          <Col span={6}><Card size="small"><Statistic title="总点赞" value={stat.totalLikes} prefix={<LikeOutlined />} /></Card></Col>
+          <Col span={6}><Card size="small"><Statistic title="总评论" value={stat.totalComments} prefix={<CommentOutlined />} /></Card></Col>
+        </Row>
+      )}
       <h2>内容审核（游记）</h2>
 
       <Space style={{ marginBottom: 16 }}>

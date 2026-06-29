@@ -47,6 +47,8 @@ const WHITE_LIST = [
   '/api/ticket-review/create',
   '/api/traffic-guide/list',
   '/api/traffic-guide/detail',
+  '/api/topic/active',
+  '/api/community/note/comment',
 ];
 
 @Middleware()
