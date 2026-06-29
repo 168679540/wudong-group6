@@ -49,6 +49,7 @@ const Layout = () => {
       key: 'zhu', icon: <HomeOutlined />, label: '住·民宿住宿',
       children: [
         { key: '/homestay', icon: <HomeOutlined />, label: '民宿管理' },
+        { key: '/homestay-reviews', icon: <EyeOutlined />, label: '民宿评价' },
       ],
     },
     {
@@ -84,7 +85,7 @@ const Layout = () => {
       '/admin': 'sys', '/user': 'sys', '/role': 'sys', '/settings': 'sys',
       '/product-category': 'yi', '/products': 'yi', '/product-reviews': 'yi',
       '/food': 'shi', '/restaurant-reviews': 'shi', '/agro-products': 'shi', '/agro-category': 'shi', '/meal-slots': 'shi',
-      '/homestay': 'zhu',
+      '/homestay': 'zhu', '/homestay-reviews': 'zhu',
       '/tickets': 'xing',
       '/travel-note': 'she',
       '/application': 'ops', '/merchant': 'ops', '/banner': 'ops', '/announcement': 'ops', '/order': 'ops', '/settlement': 'ops',

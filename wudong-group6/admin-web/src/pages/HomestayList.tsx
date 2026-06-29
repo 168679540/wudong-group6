@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Space, Tag, Modal, Form, Input, InputNumber, Select, Image, Popconfirm, message } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { getAdminHomestayList, createHomestay, updateHomestay, deleteHomestay, updateHomestayStatus, Homestay } from '../api/homestay';
+import { Row, Col, Card, Statistic } from 'antd';
+import { HomeOutlined, DollarOutlined, TrophyOutlined } from '@ant-design/icons';
+import request from '../api/request';
 
 const HomestayList: React.FC = () => {
   const [data, setData] = useState<Homestay[]>([]);
@@ -18,7 +21,10 @@ const HomestayList: React.FC = () => {
       if (r.success) { setData(r.data || []); setPagination(prev => ({ ...prev, current: page, total: r.total || 0 })); }
     }).catch(() => message.error('加载失败')).finally(() => setLoading(false));
   };
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); loadStats(); }, []);
+
+  const [stat, setStat] = useState<any>({ totalRooms: 0, avgPrice: 0, topRated: [] });
+  const loadStats = () => { request.get('/homestay/stats').then((r: any) => { if (r.success) setStat(r.data); }).catch(() => {}); };
 
   const openCreate = () => { setEditing(null); form.resetFields(); form.setFieldsValue({ status: 1, pricePerNight: 0, roomCount: 1 }); setModalOpen(true); };
   const openEdit = (h: Homestay) => { setEditing(h); form.setFieldsValue(h); setModalOpen(true); };
@@ -53,6 +59,13 @@ const HomestayList: React.FC = () => {
 
   return (
     <div>
+      {stat.totalRooms > 0 && (
+        <Row gutter={16} style={{ marginBottom: 16 }}>
+          <Col span={8}><Card size="small"><Statistic title="总房源" value={stat.totalRooms} suffix="间" prefix={<HomeOutlined />} /></Card></Col>
+          <Col span={8}><Card size="small"><Statistic title="平均房价" value={stat.avgPrice} suffix="元" precision={0} prefix={<DollarOutlined />} /></Card></Col>
+          <Col span={8}><Card size="small" title={<><TrophyOutlined /> 评分最高</>}>{stat.topRated?.slice(0, 2).map((h: any, i: number) => <div key={i} style={{ fontSize: 12 }}>🏆 {h.name} ⭐{Number(h.rating).toFixed(1)}</div>)}</Card></Col>
+        </Row>
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
         <h2>住·民宿住宿管理</h2>
         <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>新增民宿</Button>

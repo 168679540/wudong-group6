@@ -2,7 +2,7 @@ import request from './request';
 
 export interface Homestay {
   id: number; name: string; coverImage: string; address: string;
-  pricePerNight: number; roomCount: number; amenities: string; description: string;
+  pricePerNight: number; roomCount: number; amenities: string; rating: number; description: string;
   merchantId: number; status?: number;
 }
 

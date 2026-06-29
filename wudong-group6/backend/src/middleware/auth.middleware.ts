@@ -41,6 +41,8 @@ const WHITE_LIST = [
   '/api/agro-category/active',
   '/api/restaurant-review/list',
   '/api/restaurant-review/create',
+  '/api/homestay-review/list',
+  '/api/homestay-review/create',
 ];
 
 @Middleware()
