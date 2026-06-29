@@ -38,4 +38,15 @@ export class ProductReviewService {
     const r = await this.model.createQueryBuilder('r').where('r.id = :id', { id }).getOne();
     if (!r) return null; r.status = status; return this.model.save(r);
   }
+
+  async followUp(id: number, content: string): Promise<ProductReview | null> {
+    const r = await this.model.createQueryBuilder('r').where('r.id = :id', { id }).andWhere('r.is_deleted = 0').getOne();
+    if (!r) return null;
+    // 检查30天限制
+    const days = (Date.now() - new Date(r.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+    if (days > 30) throw new Error('评价已超过30天，无法追评');
+    if (r.followUp) throw new Error('已追评过，只能追评一次');
+    r.followUp = content;
+    return this.model.save(r);
+  }
 }

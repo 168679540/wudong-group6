@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Tag, Select, Image, message, Button, Space, Modal, Input, Form } from 'antd';
-import { TruckOutlined } from '@ant-design/icons';
-import { getOrderList, shipOrder, Order } from '../api/order';
+import { Table, Tag, Select, Image, message, Button, Space, Modal, Input, Form, Popconfirm } from 'antd';
+import { TruckOutlined, DollarOutlined } from '@ant-design/icons';
+import { getOrderList, shipOrder, refundOrder, Order } from '../api/order';
 
 const { Option } = Select;
 
@@ -56,6 +56,14 @@ const OrderList: React.FC = () => {
     message.success('发货成功'); setShipModal({ open: false, id: 0 }); fetchOrders(pagination.current, pagination.pageSize);
   };
 
+  const handleRefund = async (id: number) => {
+    try {
+      const res: any = await refundOrder(id);
+      if (res.success) { message.success('退款成功'); fetchOrders(pagination.current, pagination.pageSize); }
+      else message.error(res.message || '退款失败');
+    } catch { message.error('退款失败'); }
+  };
+
   const columns = [
     { title: '序号', key: 'index', width: 55, render: (_: any, __: any, i: number) => (pagination.current - 1) * pagination.pageSize + i + 1 },
     { title: '商品图', dataIndex: 'itemImage', key: 'itemImage', width: 70,
@@ -71,6 +79,9 @@ const OrderList: React.FC = () => {
         <span style={{ color: '#999' }}>-</span>
     },
     { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 155, render: (v: string) => formatTime(v) },
+    { title: '操作', key: 'action', width: 80, render: (_: any, r: Order) =>
+      r.status === 1 ? <Popconfirm title="确定退款？" onConfirm={() => handleRefund(r.id)}><Button size="small" icon={<DollarOutlined />}>退款</Button></Popconfirm> : null
+    },
   ];
 
   return (

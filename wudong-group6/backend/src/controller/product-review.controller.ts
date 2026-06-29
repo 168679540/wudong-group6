@@ -27,4 +27,10 @@ export class ProductReviewController {
 
   @Put('/status')
   async status(@Body() body: { id: number; status: number }) { const r = await this.service.updateStatus(body.id, body.status); return r ? { success: true, message: '状态更新' } : { success: false, message: '评价不存在' }; }
+
+  @Post('/follow-up')
+  async followUp(@Body() body: { id: number; content: string }) {
+    try { const r = await this.service.followUp(body.id, body.content); return { success: true, message: '追评成功', data: r }; }
+    catch (err: any) { return { success: false, message: err.message || '追评失败' }; }
+  }
 }

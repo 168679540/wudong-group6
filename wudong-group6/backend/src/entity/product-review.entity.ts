@@ -8,6 +8,7 @@ export class ProductReview {
   @Column({ type: 'tinyint', default: 5 }) rating: number;
   @Column({ type: 'varchar', length: 500, nullable: true }) content: string;
   @Column({ type: 'varchar', length: 500, nullable: true }) reply: string;
+  @Column({ name: 'follow_up', type: 'varchar', length: 500, nullable: true }) followUp: string;
   @Column({ type: 'tinyint', default: 1 }) status: number;
   @CreateDateColumn({ name: 'created_at' }) createdAt: Date;
   @UpdateDateColumn({ name: 'updated_at' }) updatedAt: Date;

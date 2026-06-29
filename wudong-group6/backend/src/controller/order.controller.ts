@@ -27,4 +27,12 @@ export class OrderController {
     const order = await this.orderService.ship(body.id, body.expressCompany, body.expressNo);
     return order ? { success: true, message: '发货成功', data: order } : { success: false, message: '订单不存在' };
   }
+
+  @Post('/refund')
+  async refund(@Body() body: { id: number }) {
+    try {
+      const order = await this.orderService.refund(body.id);
+      return { success: true, message: '退款成功', data: order };
+    } catch (err: any) { return { success: false, message: err.message || '退款失败' }; }
+  }
 }

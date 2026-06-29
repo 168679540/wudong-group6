@@ -66,4 +66,12 @@ export class OrderService {
     order.status = 2; // 已确认/已发货
     return this.orderModel.save(order);
   }
+
+  async refund(id: number): Promise<Order | null> {
+    const order = await this.orderModel.findOne({ where: { id, isDeleted: 0 } });
+    if (!order) return null;
+    if (order.status !== 1) throw new Error('当前状态不可退款');
+    order.status = 4;
+    return this.orderModel.save(order);
+  }
 }

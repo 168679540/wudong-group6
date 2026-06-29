@@ -7,7 +7,7 @@ import { createOrder } from '../api/order';
 import { useCart } from '../components/CartContext';
 import CartDrawer from '../components/CartDrawer';
 import { getActiveCategories } from '../api/category';
-import { getProductReviews, createReview, ProductReview } from '../api/review';
+import { getProductReviews, createReview, followUpReview, ProductReview } from '../api/review';
 import { toggleFavorite, checkFavorite } from '../api/favorite';
 
 const { Header, Content, Footer } = Layout;
@@ -37,10 +37,12 @@ const PublicProduct: React.FC = () => {
   const [specQty, setSpecQty] = useState(1);
   const [buying, setBuying] = useState(false);
 
-  // 评价提交
+  // 评价提交&追评
   const [myRating, setMyRating] = useState(5);
   const [myContent, setMyContent] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [followUpTarget, setFollowUpTarget] = useState<number | null>(null);
+  const [followUpContent, setFollowUpContent] = useState('');
 
   useEffect(() => {
     getActiveCategories().then((r: any) => {
@@ -88,12 +90,23 @@ const PublicProduct: React.FC = () => {
       if (res.success) {
         message.success('评价成功！');
         setMyRating(5); setMyContent('');
-        // 刷新评价列表
         const r2: any = await getProductReviews(detail.id);
         if (r2.success) setReviews(r2.data || []);
       } else { message.error(res.message || '评价失败'); }
     } catch { message.error('评价失败'); }
     finally { setSubmittingReview(false); }
+  };
+
+  const handleFollowUp = async () => {
+    if (!followUpTarget || !followUpContent.trim()) { message.warning('请输入追评内容'); return; }
+    try {
+      const res: any = await followUpReview(followUpTarget, followUpContent.trim());
+      if (res.success) {
+        message.success('追评成功！');
+        setFollowUpTarget(null); setFollowUpContent('');
+        if (detail) { const r2: any = await getProductReviews(detail.id); if (r2.success) setReviews(r2.data || []); }
+      } else { message.error(res.message || '追评失败'); }
+    } catch { message.error('追评失败'); }
   };
 
   const specOptions = useMemo(() => {
@@ -237,6 +250,10 @@ const PublicProduct: React.FC = () => {
                       <div>
                         <span style={{ color: '#999', fontSize: 12 }}>{new Date(r.createdAt).toLocaleString()}</span>
                         {r.reply && <Tag color="blue" style={{ marginLeft: 8 }}>商家回复: {r.reply}</Tag>}
+                        {r.followUp && <div style={{ marginTop: 4, background: '#f6ffed', padding: '4px 8px', borderRadius: 4, fontSize: 12 }}>
+                          <b>追评：</b>{r.followUp}</div>}
+                        {!r.followUp && <Button type="link" size="small" onClick={() => { setFollowUpTarget(r.id); setFollowUpContent(''); }}
+                          style={{ padding: 0, fontSize: 11 }}>追评</Button>}
                       </div>
                     } />
                 </List.Item>
@@ -272,6 +289,11 @@ const PublicProduct: React.FC = () => {
             <div style={{ background: '#fff7e6', borderRadius: 8, padding: '12px 16px', marginTop: 20, display: 'flex', justifyContent: 'space-between' }}><span style={{ fontSize: 15, color: '#666' }}>合计</span><span style={{ fontSize: 24, fontWeight: 'bold', color: '#f5222d' }}>¥{(buyTarget.price * specQty).toFixed(2)}</span></div>
           </div>
         )}
+      </Modal>
+
+      {/* 追评弹窗 */}
+      <Modal title="写追评" open={!!followUpTarget} onCancel={() => setFollowUpTarget(null)} onOk={handleFollowUp} okText="提交">
+        <Input.TextArea rows={3} value={followUpContent} onChange={e => setFollowUpContent(e.target.value)} placeholder="追评内容（30天内，仅一次）" maxLength={500} />
       </Modal>
 
       <Footer style={{ textAlign: 'center', background: '#001529', color: '#fff', padding: '24px 50px' }}>

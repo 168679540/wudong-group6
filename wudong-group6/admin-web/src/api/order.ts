@@ -27,3 +27,7 @@ export const createOrder = (data: { type: string; amount: number; userId?: numbe
 export const shipOrder = (id: number, expressCompany: string, expressNo: string) => {
   return request.post('/order/ship', { id, expressCompany, expressNo });
 };
+
+export const refundOrder = (id: number) => {
+  return request.post('/order/refund', { id });
+};
