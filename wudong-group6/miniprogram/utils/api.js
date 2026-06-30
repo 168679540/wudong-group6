@@ -1,4 +1,5 @@
-const BASE = 'http://127.0.0.1:7001/api';
+// ===== 手机预览时把127.0.0.1改成电脑的局域网IP(如192.168.1.5) =====
+var BASE = 'http://127.0.0.1:7001/api';
 
 function request(url, method = 'GET', data = {}) {
   return new Promise((resolve, reject) => {
