@@ -54,13 +54,13 @@
       <view style="display:flex;gap:16rpx;margin-bottom:16rpx" wx:if="{{specSizes.length>0}}">
         <text style="flex:1;line-height:64rpx;color:#666;font-size:26rpx">尺寸</text>
         <picker value="{{specSizeIdx}}" range="{{specSizes}}" bindchange="onSizeChange" style="flex:2">
-          <view style="border:1px solid #1890ff;border-radius:8rpx;padding:16rpx;text-align:center;background:#e6f7ff">{{specSizes[specSizeIdx]||'请选择'}}</view>
+          <view style="border:1px solid #d4a14b;border-radius:8rpx;padding:16rpx;text-align:center;background:#fef8f0">{{specSizes[specSizeIdx]||'请选择'}}</view>
         </picker>
       </view>
       <view style="display:flex;gap:16rpx;margin-bottom:16rpx" wx:if="{{specColors.length>0}}">
         <text style="flex:1;line-height:64rpx;color:#666;font-size:26rpx">颜色</text>
         <picker value="{{specColorIdx}}" range="{{specColors}}" bindchange="onColorChange" style="flex:2">
-          <view style="border:1px solid #1890ff;border-radius:8rpx;padding:16rpx;text-align:center;background:#e6f7ff">{{specColors[specColorIdx]||'请选择'}}</view>
+          <view style="border:1px solid #d4a14b;border-radius:8rpx;padding:16rpx;text-align:center;background:#fef8f0">{{specColors[specColorIdx]||'请选择'}}</view>
         </picker>
       </view>
       <view style="display:flex;gap:16rpx;margin-bottom:24rpx">

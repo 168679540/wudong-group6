@@ -13,14 +13,16 @@
     "pages/mine/mine"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#1890ff",
+    "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTitleText": "乌东文旅",
-    "navigationBarTextStyle": "white",
+    "navigationBarTextStyle": "black",
     "backgroundColor": "#f5f5f5"
   },
   "tabBar": {
     "color": "#8c8c8c",
-    "selectedColor": "#1890ff",
+    "selectedColor": "#d4a14b",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
     "list": [
       { "pagePath": "pages/index/index", "text": "首页" },
       { "pagePath": "pages/product/product", "text": "衣" },
