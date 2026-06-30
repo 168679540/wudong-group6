@@ -1,4 +1,4 @@
-import { Provide } from '@midwayjs/core';import { InjectEntityModel } from '@midwayjs/typeorm';import { Repository } from 'typeorm';import { ProductReview } from '../entity/product-review.entity';import { IPageParams, IPageResult } from '../interface';
+import { Provide } from '@midwayjs/core'; import { InjectEntityModel } from '@midwayjs/typeorm'; import { Repository } from 'typeorm'; import { ProductReview } from '../entity/product-review.entity'; import { IPageParams, IPageResult } from '../interface';
 @Provide() export class TicketReviewService {
   @InjectEntityModel(ProductReview) model: Repository<ProductReview>;
   async listByTicket(tid:number,page=1,pageSize=20):Promise<IPageResult<ProductReview>>{const qb=this.model.createQueryBuilder('r').where('r.is_deleted=0').andWhere('r.ticket_id=:tid',{tid}).andWhere('r.status=1');const[l,t]=await qb.skip((page-1)*pageSize).take(pageSize).orderBy('r.created_at','DESC').getManyAndCount();return{list:l,total:t,page,pageSize};}

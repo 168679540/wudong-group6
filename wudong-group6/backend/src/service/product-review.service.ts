@@ -18,7 +18,7 @@ export class ProductReviewService {
 
   async adminList(params: IPageParams & { productId?: number; status?: number }): Promise<IPageResult<ProductReview>> {
     const { page = 1, pageSize = 10, productId, status } = params;
-    const qb = this.model.createQueryBuilder('r').where('r.is_deleted = 0');
+    const qb = this.model.createQueryBuilder('r').where('r.is_deleted = 0').andWhere('r.product_id IS NOT NULL');
     if (productId) qb.andWhere('r.product_id = :pid', { pid: productId });
     if (status !== undefined && status !== null) qb.andWhere('r.status = :st', { st: status });
     const [list, total] = await qb.skip((page - 1) * pageSize).take(pageSize).orderBy('r.created_at', 'DESC').getManyAndCount();
