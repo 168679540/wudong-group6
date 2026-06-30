@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Menu, Card, Row, Col, Spin, message, Tag, Modal, Image, Descriptions, Rate, Input, Button, List, Space, Form } from 'antd';
-import { EyeOutlined, LikeOutlined, EnvironmentOutlined, UserOutlined, ArrowLeftOutlined, CameraOutlined, CommentOutlined, SendOutlined, PlusOutlined } from '@ant-design/icons';
+import { EyeOutlined, LikeOutlined, EnvironmentOutlined, UserOutlined, ArrowLeftOutlined, CameraOutlined, CommentOutlined, SendOutlined, PlusOutlined, WarningOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getNoteList } from '../api/community';
 import request from '../api/request';
@@ -25,6 +25,10 @@ const PublicCommunity: React.FC = () => {
   const [publishCover, setPublishCover] = useState('');
   const [publishAuthor, setPublishAuthor] = useState('');
   const [publishing, setPublishing] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportTargetId, setReportTargetId] = useState(0);
+  const [reportReason, setReportReason] = useState('');
+  const [reporting, setReporting] = useState(false);
 
   useEffect(() => {
     getNoteList({ pageSize: 50 }).then((r: any) => {
@@ -141,6 +145,9 @@ const PublicCommunity: React.FC = () => {
             <Descriptions.Item label="浏览"><EyeOutlined /> {detail.viewCount}</Descriptions.Item>
             <Descriptions.Item label="点赞"><LikeOutlined /> {detail.likeCount}</Descriptions.Item>
           </Descriptions>
+          <div style={{ textAlign: 'right', marginBottom: 12 }}>
+            <Button size="small" icon={<WarningOutlined/>} danger onClick={()=>{setReportTargetId(detail.id);setReportReason('');setReportOpen(true);}}>举报</Button>
+          </div>
           <div style={{ background: '#fafafa', padding: 20, borderRadius: 8, lineHeight: 2, fontSize: 15, whiteSpace: 'pre-wrap', marginBottom: 24 }}>{detail.content || '暂无内容'}</div>
           <h4 style={{ marginBottom: 12 }}><CommentOutlined /> 评论 ({comments.length}条)</h4>
           {detailLoading && <Spin />}
@@ -149,6 +156,8 @@ const PublicCommunity: React.FC = () => {
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}><Input placeholder="写下你的评论..." value={commentText} onChange={e => setCommentText(e.target.value)} maxLength={500} onPressEnter={handleComment} style={{ flex: 1 }} /><Button type="primary" icon={<SendOutlined />} loading={submitting} onClick={handleComment}>发送</Button></div>
         </div>)}
       </Modal>
+      {/* 举报弹窗 */}
+      <Modal title="举报" open={reportOpen} onCancel={()=>setReportOpen(false)} onOk={async()=>{if(!reportReason.trim()){message.warning('请输入举报原因');return;}setReporting(true);try{await request.post('/report/create',{targetType:'note',targetId:reportTargetId,reason:reportReason.trim()});message.success('举报已提交');setReportOpen(false);setReportReason('');}catch{message.error('举报失败')}finally{setReporting(false);}}} confirmLoading={reporting}><Input.TextArea rows={4} value={reportReason} onChange={e=>setReportReason(e.target.value)} placeholder="请说明举报原因"/></Modal>
       <Footer style={{ textAlign: 'center', background: '#001529', color: '#fff', padding: '24px 50px' }}><div>🏯 乌东文旅 · 社区·游记分享 | © 2026 第6组</div></Footer>
     </Layout>
   );

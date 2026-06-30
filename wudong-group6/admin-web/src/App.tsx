@@ -34,6 +34,9 @@ import CommentAdminList from './pages/CommentAdminList';
 import TopicList from './pages/TopicList';
 import MessageList from './pages/MessageList';
 import OperationLogList from './pages/OperationLogList';
+import SensitiveWordList from './pages/SensitiveWordList';
+import RecommendList from './pages/RecommendList';
+import ReportList from './pages/ReportList';
 import MyFavorites from './pages/MyFavorites';
 import MyOrders from './pages/MyOrders';
 import PublicHome from './pages/PublicHome';
@@ -102,6 +105,9 @@ function App() {
             <Route path="topics" element={<TopicList />} />
             <Route path="messages" element={<MessageList />} />
             <Route path="operation-logs" element={<OperationLogList />} />
+            <Route path="sensitive-words" element={<SensitiveWordList />} />
+            <Route path="recommends" element={<RecommendList />} />
+            <Route path="reports" element={<ReportList />} />
             <Route path="food" element={<FoodList />} />
             <Route path="homestay" element={<HomestayList />} />
             <Route path="tickets" element={<TravelTicketList />} />

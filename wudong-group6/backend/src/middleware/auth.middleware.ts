@@ -54,6 +54,10 @@ const WHITE_LIST = [
   '/api/message/list',
   '/api/message/admin/list',
   '/api/operation-log/list',
+  '/api/recommend/active',
+  '/api/follow/check',
+  '/api/follow/toggle',
+  '/api/report/create',
 ];
 
 @Middleware()

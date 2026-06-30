@@ -9,6 +9,10 @@ export class Homestay {
   @Column({ name: 'price_per_night', type: 'decimal', precision: 10, scale: 2 }) pricePerNight: number;
   @Column({ name: 'room_count', type: 'int', default: 1 }) roomCount: number;
   @Column({ type: 'varchar', length: 255, nullable: true }) amenities: string;
+  @Column({ name: 'check_in_time', type: 'varchar', length: 10, default: '14:00' }) checkInTime: string;
+  @Column({ name: 'check_out_time', type: 'varchar', length: 10, default: '12:00' }) checkOutTime: string;
+  @Column({ name: 'cancellation_policy', type: 'varchar', length: 500, nullable: true }) cancellationPolicy: string;
+  @Column({ name: 'dynamic_price', type: 'decimal', precision: 10, scale: 2, default: 0 }) dynamicPrice: number;
   @Column({ type: 'decimal', precision: 2, scale: 1, default: 5.0 }) rating: number;
   @Column({ type: 'text', nullable: true }) description: string;
   @Column({ name: 'merchant_id', type: 'int', unsigned: true, nullable: true }) merchantId: number;

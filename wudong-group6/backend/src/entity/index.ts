@@ -14,3 +14,7 @@ export { TrafficGuide } from './traffic-guide.entity';
 export { Topic } from './topic.entity';
 export { SystemMessage } from './system-message.entity';
 export { OperationLog } from './operation-log.entity';
+export { SensitiveWord } from './sensitive-word.entity';
+export { RecommendedContent } from './recommend.entity';
+export { Report } from './report.entity';
+export { UserFollow } from './user-follow.entity';

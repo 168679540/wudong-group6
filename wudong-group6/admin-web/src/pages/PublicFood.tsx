@@ -207,6 +207,7 @@ const PublicFood: React.FC = () => {
           <div style={{ marginBottom: 16 }}><span style={{ fontWeight: 'bold' }}>用餐人数</span><InputNumber min={1} max={20} value={partySize} onChange={v => setPartySize(v || 1)} style={{ width: '100%', marginTop: 8 }} /></div>
           <div style={{ marginBottom: 16 }}><span style={{ fontWeight: 'bold' }}>预约时间</span><DatePicker showTime format="YYYY-MM-DD HH:mm" value={reserveTime} onChange={setReserveTime} style={{ width: '100%', marginTop: 8 }} placeholder="选择用餐时间" /></div>
           <div style={{ marginBottom: 16 }}><span style={{ fontWeight: 'bold' }}>特殊要求</span><Input.TextArea rows={2} value={specialReq} onChange={e => setSpecialReq(e.target.value)} placeholder="如：过敏食物、包间需求" style={{ marginTop: 8 }} /></div>
+          {bookTarget && (bookTarget as any).cancellationPolicy && <div style={{ marginBottom: 16, background: '#fff7e6', padding: '8px 12px', borderRadius: 6, fontSize: 12, color: '#fa8c16' }}>📋 取消政策：{(bookTarget as any).cancellationPolicy}</div>}
           <div style={{ background: '#fff7e6', borderRadius: 8, padding: '12px 16px', display: 'flex', justifyContent: 'space-between' }}><span>合计</span><span style={{ fontSize: 24, fontWeight: 'bold', color: '#f5222d' }}>¥{((Number(bookTarget.avgPrice) || 0) * partySize).toFixed(2)}</span></div>
         </div>)}
       </Modal>

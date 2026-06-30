@@ -26,6 +26,9 @@ const Layout = () => {
         { key: '/settings', icon: <SettingOutlined />, label: '系统设置' },
     { key: '/messages', icon: <SoundOutlined />, label: '消息管理' },
     { key: '/operation-logs', icon: <FileTextOutlined />, label: '操作日志' },
+    { key: '/sensitive-words', icon: <SafetyCertificateOutlined />, label: '敏感词管理' },
+    { key: '/recommends', icon: <PictureOutlined />, label: '推荐位管理' },
+    { key: '/reports', icon: <AuditOutlined />, label: '举报管理' },
       ],
     },
     { type: 'divider' },
@@ -88,7 +91,7 @@ const Layout = () => {
   const getOpenKeys = () => {
     const path = location.pathname;
     const parentMap: Record<string, string> = {
-      '/admin': 'sys', '/user': 'sys', '/role': 'sys', '/settings': 'sys', '/messages': 'sys', '/operation-logs': 'sys',
+      '/admin': 'sys', '/user': 'sys', '/role': 'sys', '/settings': 'sys', '/messages': 'sys', '/operation-logs': 'sys', '/sensitive-words': 'sys', '/recommends': 'sys', '/reports': 'sys',
       '/product-category': 'yi', '/products': 'yi', '/product-reviews': 'yi',
       '/food': 'shi', '/restaurant-reviews': 'shi', '/agro-products': 'shi', '/agro-category': 'shi', '/meal-slots': 'shi',
       '/homestay': 'zhu', '/homestay-reviews': 'zhu',
