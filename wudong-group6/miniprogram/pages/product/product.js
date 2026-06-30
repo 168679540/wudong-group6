@@ -9,7 +9,7 @@ Page({ data: { list: [], cats: ['全部'], cat: '', minPrice: '', maxPrice: '', 
   onMax(e) { this.setData({ maxPrice: e.detail.value }); this.load(); },
   openDetail(e) { var id = e.currentTarget.dataset.id; var p = this.data.list.find(x => x.id == id); if (p) { var d = Object.assign({}, p); d.coverImage = fixImg(d.coverImage); this.setData({ detail: d }); } },
   noop() {},
-  addToCart(e) { var p = this.data.list.find(function(x) { return x.id == e.currentTarget.dataset.id; }); if (!p) return; var cart = wx.getStorageSync('wudong_cart') || []; var uid = 'p' + p.id; var exist = cart.find(function(x) { return x.uid === uid; }); if (exist) { exist.quantity = (exist.quantity || 1) + 1; } else { cart.push({ uid: uid, productId: p.id, name: p.name, image: p.coverImage, price: Number(p.price), quantity: 1, merchantId: p.merchantId }); } wx.setStorageSync('wudong_cart', cart); wx.showToast({ title: '已加入购物车' }); },
+  addToCart(e) { var p = this.data.list.find(function(x) { return x.id == e.target.dataset.id; }); if (!p) { p = this.data.detail; if (!p) return; } var cart = wx.getStorageSync('wudong_cart') || []; var uid = 'p' + p.id; var exist = cart.find(function(x) { return x.uid === uid; }); if (exist) { exist.quantity = (exist.quantity || 1) + 1; } else { cart.push({ uid: uid, productId: p.id, name: p.name, image: p.coverImage, price: Number(p.price), quantity: 1, merchantId: p.merchantId }); } wx.setStorageSync('wudong_cart', cart); wx.showToast({ title: '已加入购物车' }); },
   closeDetail() { this.setData({ detail: null }); },
   buyFromDetail() { var p = this.data.detail; this.setData({ detail: null }); if (p) this.openBuyById(p.id); },
   openBuyById(id) { var p = this.data.list.find(x => x.id == id); if (!p) return;

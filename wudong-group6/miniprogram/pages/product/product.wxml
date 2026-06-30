@@ -20,7 +20,6 @@
     </view>
     <view style="display:flex;gap:8rpx;margin-top:8rpx">
       <button size="mini" style="flex:1" bindtap="openDetail" data-id="{{item.id}}" catchtap="openDetail">详情</button>
-      <button size="mini" style="flex:1" bindtap="addToCart" data-id="{{item.id}}" catchtap="addToCart">加购</button>
       <button size="mini" type="primary" style="flex:1" bindtap="openBuy" data-id="{{item.id}}" catchtap="openBuy">购买</button>
     </view>
   </view>
@@ -34,9 +33,10 @@
       <view class="price" style="font-size:44rpx;margin:16rpx 0">¥{{detail.price}}</view>
       <view style="color:#666;margin-bottom:8rpx">库存: {{detail.stock}}件 | 销量: {{detail.sales}}件</view>
       <view style="color:#333;line-height:1.8;font-size:28rpx;margin-bottom:24rpx">{{detail.description||'暂无描述'}}</view>
-      <view style="display:flex;gap:16rpx">
-        <button size="mini" style="flex:1" bindtap="closeDetail">返回</button>
-        <button size="mini" type="primary" style="flex:1" bindtap="buyFromDetail">立即购买 ¥{{detail.price}}</button>
+      <view style="display:flex;gap:12rpx">
+        <button size="mini" bindtap="closeDetail" catchtap="closeDetail">返回</button>
+        <button size="mini" bindtap="addToCart" data-id="{{detail.id}}" catchtap="addToCart">🛒 加购</button>
+        <button size="mini" type="primary" bindtap="buyFromDetail" catchtap="buyFromDetail">立即购买</button>
       </view>
     </view>
   </view>
