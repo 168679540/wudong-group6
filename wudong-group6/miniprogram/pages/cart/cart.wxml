@@ -1,12 +1,15 @@
 <view class="container">
-  <view wx:if="{{items.length===0}}" style="text-align:center;padding:100rpx 0;color:#999">购物车空空如也</view>
+  <view wx:if="{{items.length===0}}" style="text-align:center;padding:100rpx 0;color:#999">购物车空空如也<br/><text style="font-size:24rpx">去「衣」页面逛逛吧</text></view>
   <view class="card" wx:for="{{items}}" wx:key="uid" style="display:flex;gap:16rpx;align-items:center">
-    <image src="{{item.image}}" style="width:120rpx;height:120rpx;border-radius:12rpx" mode="aspectFill"/>
-    <view style="flex:1"><view style="font-weight:bold">{{item.name}}</view><view class="price">¥{{item.price}}</view><view style="color:#999;font-size:22rpx">x{{item.quantity}}</view></view>
-    <button size="mini" bindtap="remove" data-uid="{{item.uid}}">删除</button>
+    <image src="{{item.image}}" style="width:140rpx;height:140rpx;border-radius:12rpx" mode="aspectFill"/>
+    <view style="flex:1"><view style="font-weight:bold;font-size:28rpx">{{item.name}}</view><view class="price" style="font-size:28rpx">¥{{item.price}}</view></view>
+    <view style="display:flex;align-items:center;gap:8rpx">
+      <button size="mini" bindtap="remove" data-uid="{{item.uid}}">删</button>
+      <input value="{{item.quantity}}" bindinput="onQty" data-uid="{{item.uid}}" type="number" style="width:80rpx;border:1px solid #e5e5e5;border-radius:8rpx;padding:8rpx;text-align:center"/>
+    </view>
   </view>
   <view wx:if="{{items.length>0}}" style="position:fixed;bottom:0;left:0;right:0;background:#fff;padding:20rpx 32rpx;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #eee">
     <view>合计 <text class="price" style="font-size:36rpx">¥{{total}}</text></view>
-    <button type="primary" bindtap="checkout">去结算({{items.length}})</button>
+    <button type="primary" bindtap="checkout">结算({{items.length}})</button>
   </view>
 </view>

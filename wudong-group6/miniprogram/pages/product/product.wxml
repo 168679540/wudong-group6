@@ -20,6 +20,7 @@
     </view>
     <view style="display:flex;gap:8rpx;margin-top:8rpx">
       <button size="mini" style="flex:1" bindtap="openDetail" data-id="{{item.id}}" catchtap="openDetail">详情</button>
+      <button size="mini" style="flex:1" bindtap="addToCart" data-id="{{item.id}}" catchtap="addToCart">加购</button>
       <button size="mini" type="primary" style="flex:1" bindtap="openBuy" data-id="{{item.id}}" catchtap="openBuy">购买</button>
     </view>
   </view>
