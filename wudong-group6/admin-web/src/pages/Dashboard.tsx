@@ -55,7 +55,7 @@ const Dashboard: React.FC = () => {
     grid: { left: 55, right: 20, top: 20, bottom: 30 },
     xAxis: { type: 'category' as const, data: X_LABELS },
     yAxis: { type: 'value' as const, name: '元' },
-    series: [{ data: gmvTrend, type: 'bar' as const, barWidth: '50%', label: { show: true, position: 'top', formatter: '{c}', fontSize: 10 }, itemStyle: { color: '#faad14', borderRadius: [4, 4, 0, 0] } }],
+    series: [{ data: gmvTrend, type: 'bar' as const, barWidth: '50%', label: { show: true, position: 'top' as const, formatter: '{c}', fontSize: 10 }, itemStyle: { color: '#faad14', borderRadius: [4, 4, 0, 0] } }],
   }), [gmvTrend]);
 
   // 用户趋势图
@@ -97,7 +97,7 @@ const Dashboard: React.FC = () => {
     grid: { left: 55, right: 20, top: 10, bottom: 30 },
     xAxis: { type: 'category' as const, data: moduleGMV.map(m => m.name) },
     yAxis: { type: 'value' as const, name: '元' },
-    series: [{ type: 'bar' as const, data: moduleGMV.map(m => m.value), barWidth: '50%', label: { show: true, position: 'top', formatter: '¥{c}', fontSize: 10 }, itemStyle: { borderRadius: [4, 4, 0, 0], color: (p: any) => MODULE_COLORS[moduleGMV[p.dataIndex]?.name] || '#999' } }],
+    series: [{ type: 'bar' as const, data: moduleGMV.map(m => m.value), barWidth: '50%', label: { show: true, position: 'top' as const, formatter: '¥{c}', fontSize: 10 }, itemStyle: { borderRadius: [4, 4, 0, 0], color: (p: any) => MODULE_COLORS[moduleGMV[p.dataIndex]?.name] || '#999' } }],
   }), [moduleGMV]);
 
   // 订单量按模块聚合
