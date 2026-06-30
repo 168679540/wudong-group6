@@ -18,3 +18,4 @@ export { SensitiveWord } from './sensitive-word.entity';
 export { RecommendedContent } from './recommend.entity';
 export { Report } from './report.entity';
 export { UserFollow } from './user-follow.entity';
+export { CommissionConfig } from './commission-config.entity';
