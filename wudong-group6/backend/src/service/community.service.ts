@@ -12,7 +12,7 @@ export class CommunityService {
 
   async noteList(params: IPageParams & { keyword?: string; location?: string }): Promise<IPageResult<TravelNote>> {
     const { page = 1, pageSize = 10, keyword, location } = params;
-    const qb = this.noteModel.createQueryBuilder('t').where('t.is_deleted = 0').andWhere('t.status = 1');
+    const qb = this.noteModel.createQueryBuilder('t').where('t.is_deleted = 0').andWhere('t.status IN (:...s)', { s: [0, 1] });
     if (keyword) qb.andWhere('t.title LIKE :kw', { kw: `%${keyword}%` });
     if (location) qb.andWhere('t.location LIKE :loc', { loc: `%${location}%` });
     qb.skip((page - 1) * pageSize).take(pageSize).orderBy('t.created_at', 'DESC');

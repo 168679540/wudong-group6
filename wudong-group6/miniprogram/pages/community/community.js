@@ -17,6 +17,6 @@ Page({ data: { list: [], detail: null, comments: [], commentText: '', publishOpe
   onPublishContent(e) { this.setData({ publishContent: e.detail.value }); },
   onPublishLocation(e) { this.setData({ publishLocation: e.detail.value }); },
   onPublishCover(e) { this.setData({ publishCover: e.detail.value }); },
-  chooseImage() { var that = this; wx.chooseMedia({ count: 1, mediaType: ['image'], sourceType: ['album', 'camera'], success(res) { var tempPath = res.tempFiles[0].tempFilePath; that.setData({ publishCover: tempPath }); wx.showToast({ title: '图片已选择(本地预览)', icon: 'none' }); } }); },
+  chooseImage() { var that = this; wx.chooseMedia({ count: 1, mediaType: ['image'], sourceType: ['album', 'camera'], success(res) { var tempPath = res.tempFiles[0].tempFilePath; that.setData({ publishCover: tempPath }); wx.showToast({ title: '图片已选(填写网络URL才会显示)', icon: 'none' }); } }); },
   doPublish() { var that = this; if (!this.data.publishTitle.trim() || !this.data.publishContent.trim()) { wx.showToast({ title: '请填写标题和内容', icon: 'none' }); return; } api.publishNote({ title: this.data.publishTitle.trim(), content: this.data.publishContent.trim(), location: this.data.publishLocation || '乌东苗寨', authorName: '游客', coverImage: this.data.publishCover || '' }).then(function(r) { if (r.success) { wx.showToast({ title: '发布成功，等待审核' }); that.setData({ publishOpen: false }); that.load(); } else { wx.showToast({ title: r.message || '发布失败', icon: 'none' }); } }); }
 });
