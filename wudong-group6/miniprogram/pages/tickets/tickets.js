@@ -2,7 +2,7 @@ var IMG = 'http://127.0.0.1:3000';
 function fixImg(url) { if (!url) return ''; return url.startsWith('/') ? IMG + url : url; }
 var api = require('../../utils/api');
 Page({ data: { list: [], traffic: [], type: '', buyTarget: null, ticketType: '成人票', qty: 1, visitDate: '', trafficDetail: null },
-  onLoad() { this.load(); api.getTraffic({ pageSize: 10 }).then(r => r.success && this.setData({ traffic: r.data })); },
+  onLoad() { this.load(); api.getTraffic({ pageSize: 10 }).then(r => { if (r.success) { var t = (r.data || []).map(function(x) { x.coverImage = fixImg(x.coverImage); return x; }); this.setData({ traffic: t }); } }); },
   load() { var p = { pageSize: 50 }; if (this.data.type) p.type = this.data.type; api.getTickets(p).then(r => { if (r.success) { var list = (r.data || []).map(function(x) { x.coverImage = fixImg(x.coverImage); return x; }); this.setData({ list: list }); } }); },
   setType(e) { this.setData({ type: e.currentTarget.dataset.t }); this.load(); },
   openTraffic(e) { var g = this.data.traffic.find(x => x.id == e.currentTarget.dataset.id); if (g) this.setData({ trafficDetail: g }); },
