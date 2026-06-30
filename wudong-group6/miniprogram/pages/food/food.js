@@ -19,10 +19,16 @@ Page({ data: { list: [], agro: [], detail: null, reviews: [], reviewLoading: fal
   closeDetail() { this.setData({ detail: null, reviews: [] }); },
   bookFromDetail() { var r = this.data.detail; this.setData({ detail: null }); if (r) this.openBookById(r.id); },
   onMyComment(e) { this.setData({ myComment: e.detail.value }); },
-  submitReview() { var that = this; if (!this.data.myComment.trim()) return;
+  submitReview() { var that = this; var detailId = this.data.detail.id;
+    if (!this.data.myComment.trim()) return;
     this.setData({ submitting: true });
-    api.createReview('restaurant', { restaurantId: this.data.detail.id, rating: 5, content: this.data.myComment.trim() }).then(function(r) {
-      if (r.success) { wx.showToast({ title: '评价成功' }); that.setData({ myComment: '' }); that.openDetail({ currentTarget: { dataset: { id: that.data.detail.id } } }); } else { wx.showToast({ title: r.message || '失败', icon: 'none' }); }
+    api.createReview('restaurant', { restaurantId: detailId, rating: 5, content: this.data.myComment.trim() }).then(function(r) {
+      if (r.success) { wx.showToast({ title: '评价成功' }); that.setData({ myComment: '' });
+        // 重新加载评价列表
+        api.getReviews('restaurant', detailId).then(function(res) {
+          if (res.success) that.setData({ reviews: res.data || [], reviewLoading: false });
+        }).catch(function() { that.setData({ reviewLoading: false }); });
+      } else { wx.showToast({ title: r.message || '失败', icon: 'none' }); }
     }).catch(function(){ wx.showToast({ title: '评价失败', icon: 'none' }); }).finally(function() { that.setData({ submitting: false }); });
   },
 
