@@ -9,9 +9,17 @@
   </view>
   <view class="card" style="margin-top:24rpx">
     <view style="font-weight:bold;margin-bottom:12rpx">📬 消息通知</view>
-    <view wx:for="{{messages}}" wx:key="id" style="padding:12rpx 0;border-bottom:1px solid #f0f0f0">
+    <view wx:for="{{messages}}" wx:key="id" style="padding:12rpx 0;border-bottom:1px solid #f0f0f0" bindtap="openMsg" data-id="{{item.id}}">
       <text class="tag tag-blue">{{item.type}}</text> {{item.title}}
     </view>
     <view wx:if="{{messages.length===0}}" style="color:#999">暂无消息</view>
+  </view>
+  <!-- 消息详情弹窗 -->
+  <view class="msg-mask" wx:if="{{msgDetail}}" catchtouchmove="noop">
+    <view class="msg-popup" catchtouchmove="noop">
+      <view style="font-size:34rpx;font-weight:bold;margin-bottom:16rpx"><text class="tag tag-blue">{{msgDetail.type}}</text> {{msgDetail.title}}</view>
+      <view style="background:#fafafa;padding:20rpx;border-radius:12rpx;line-height:1.8;font-size:28rpx;margin-bottom:24rpx">{{msgDetail.content||'暂无详情'}}</view>
+      <button bindtap="closeMsg">关闭</button>
+    </view>
   </view>
 </view>
