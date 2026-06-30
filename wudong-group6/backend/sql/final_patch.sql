@@ -1,3 +1,4 @@
+-- 单条执行就不会报错了
 ALTER TABLE homestay ADD COLUMN check_in_time VARCHAR(10) DEFAULT '14:00' AFTER amenities;
 ALTER TABLE homestay ADD COLUMN check_out_time VARCHAR(10) DEFAULT '12:00' AFTER check_in_time;
 ALTER TABLE homestay ADD COLUMN cancellation_policy VARCHAR(500) DEFAULT '入住前3天免费取消，1-3天扣30%，当天不退' AFTER check_out_time;
