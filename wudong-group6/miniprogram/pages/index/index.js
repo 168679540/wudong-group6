@@ -1,4 +1,6 @@
-const api = require('../../utils/api');
+var IMG = 'http://127.0.0.1:3000';
+function fixImg(url) { if (!url) return ''; return url.startsWith('/') ? IMG + url : url; }
+var api = require('../../utils/api');
 Page({
   data: {
     banners: [],
@@ -15,9 +17,9 @@ Page({
   },
   onLoad() {
     api.getBanners().then(r => r.success && this.setData({ banners: r.data }));
-    api.getProducts({ pageSize: 6 }).then(r => r.success && this.setData({ hotProducts: r.data }));
+    api.getProducts({ pageSize: 6 }).then(r => { if (r.success) { var list = (r.data || []).map(function(x) { x.coverImage = fixImg(x.coverImage); return x; }); this.setData({ hotProducts: list }); } });
     api.getNotes({ pageSize: 6 }).then(r => r.success && this.setData({ statCards: this.data.statCards.map((c, i) => i === 2 ? { ...c, num: r.total } : c) }));
     api.getStats().then(r => r.success && this.setData({ statCards: this.data.statCards.map((c, i) => i === 0 ? { ...c, num: r.data.totalMerchants } : i === 3 ? { ...c, num: r.data.totalUsers } : c) }));
   },
-  goPage(e) { const url = e.currentTarget.dataset.url; url && wx.switchTab({ url }).catch(() => wx.navigateTo({ url })); }
+  goPage(e) { var url = e.currentTarget.dataset.url; url && wx.switchTab({ url }).catch(function() { wx.navigateTo({ url: url }); }); }
 });
