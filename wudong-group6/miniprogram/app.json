@@ -22,11 +22,11 @@
     "color": "#8c8c8c",
     "selectedColor": "#1890ff",
     "list": [
-      { "pagePath": "pages/index/index", "text": "首页", "iconPath": "images/home.png", "selectedIconPath": "images/home-active.png" },
-      { "pagePath": "pages/product/product", "text": "衣", "iconPath": "images/cloth.png", "selectedIconPath": "images/cloth-active.png" },
-      { "pagePath": "pages/cart/cart", "text": "购物车", "iconPath": "images/cart.png", "selectedIconPath": "images/cart-active.png" },
-      { "pagePath": "pages/orders/orders", "text": "订单", "iconPath": "images/order.png", "selectedIconPath": "images/order-active.png" },
-      { "pagePath": "pages/mine/mine", "text": "我的", "iconPath": "images/mine.png", "selectedIconPath": "images/mine-active.png" }
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/product/product", "text": "衣" },
+      { "pagePath": "pages/cart/cart", "text": "购物车" },
+      { "pagePath": "pages/orders/orders", "text": "订单" },
+      { "pagePath": "pages/mine/mine", "text": "我的" }
     ]
   }
 }
