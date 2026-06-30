@@ -5,14 +5,14 @@
       <text class="tag {{cat===''?'tag-blue':'tag-green'}}" wx:for="{{cats}}" wx:key="*this" wx:for-item="c" bindtap="setCat" data-c="{{c}}">{{c}}</text>
     </view>
     <view style="display:flex;align-items:center;gap:12rpx;margin-top:16rpx">
-      <input placeholder="价格最低" value="{{minPrice}}" bindinput="onMin" type="number" style="flex:1;border:1px solid #e5e5e5;border-radius:8rpx;padding:8rpx;font-size:24rpx"/>
+      <input placeholder="最低价" value="{{minPrice}}" bindinput="onMin" type="number" style="flex:1;border:1px solid #e5e5e5;border-radius:8rpx;padding:8rpx;font-size:24rpx"/>
       <text>-</text>
-      <input placeholder="最高" value="{{maxPrice}}" bindinput="onMax" type="number" style="flex:1;border:1px solid #e5e5e5;border-radius:8rpx;padding:8rpx;font-size:24rpx"/>
+      <input placeholder="最高价" value="{{maxPrice}}" bindinput="onMax" type="number" style="flex:1;border:1px solid #e5e5e5;border-radius:8rpx;padding:8rpx;font-size:24rpx"/>
     </view>
   </view>
 
   <!-- 商品列表 -->
-  <view class="card" wx:for="{{list}}" wx:key="id" style="display:flex;gap:16rpx" bindtap="openDetail" data-id="{{item.id}}">
+  <view class="card" wx:for="{{list}}" wx:key="id" style="display:flex;gap:16rpx" bindtap="openBuy" data-id="{{item.id}}">
     <image src="{{item.coverImage}}" style="width:180rpx;height:180rpx;border-radius:12rpx" mode="aspectFill"/>
     <view style="flex:1">
       <view style="font-weight:bold;font-size:30rpx;margin-bottom:8rpx">{{item.name}}</view>
@@ -20,8 +20,29 @@
       <view class="price" style="font-size:36rpx;margin-top:12rpx">¥{{item.price}}</view>
       <text style="color:#999;font-size:24rpx">已售{{item.sales}}件</text>
     </view>
-    <view style="align-self:flex-end">
-      <button size="mini" type="primary" bindtap="buyNow" data-id="{{item.id}}" catchtap="buyNow">购买</button>
+  </view>
+
+  <!-- 规格选择弹窗 -->
+  <view class="mask" wx:if="{{buyTarget}}" catchtap="closeBuy">
+    <view class="popup" catchtap="">
+      <view style="font-weight:bold;font-size:36rpx;margin-bottom:24rpx">选择规格 - {{buyTarget.name}}</view>
+      <view style="display:flex;gap:16rpx;margin-bottom:24rpx" wx:if="{{specSize}}">
+        <view style="flex:1"><text style="color:#666;font-size:26rpx">尺寸</text></view>
+        <input value="{{specSize}}" bindinput="onSpecSize" style="flex:2;border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx"/>
+      </view>
+      <view style="display:flex;gap:16rpx;margin-bottom:24rpx" wx:if="{{specColor}}">
+        <view style="flex:1"><text style="color:#666;font-size:26rpx">颜色</text></view>
+        <input value="{{specColor}}" bindinput="onSpecColor" style="flex:2;border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx"/>
+      </view>
+      <view style="display:flex;gap:16rpx;margin-bottom:24rpx">
+        <view style="flex:1"><text style="color:#666;font-size:26rpx">数量</text></view>
+        <input value="{{specQty}}" bindinput="onQty" type="number" style="flex:2;border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx"/>
+      </view>
+      <view style="background:#fff7e6;border-radius:12rpx;padding:16rpx;display:flex;justify-content:space-between;margin-bottom:24rpx">
+        <text>合计</text>
+        <text class="price" style="font-size:40rpx">¥{{(buyTarget.price * specQty).toFixed(2)}}</text>
+      </view>
+      <button type="primary" bindtap="doBuy" style="width:100%;border-radius:12rpx">确认购买</button>
     </view>
   </view>
 </view>
