@@ -53,6 +53,8 @@ export class DashboardController {
       pendingMerchants, totalMerchants,
       orderTrend, userTrend,
       orderTypeDistribution,
+      gmvTrend,
+      gmvTypeDistribution,
     ] = await Promise.all([
       this.userModel.createQueryBuilder('u').where('u.is_deleted = 0').getCount(),
       this.orderModel.createQueryBuilder('o').where('o.is_deleted = 0').getCount(),
@@ -86,6 +88,24 @@ export class DashboardController {
         .where('o.is_deleted = 0')
         .groupBy('o.type')
         .getRawMany(),
+
+      // GMV趋势
+      this.orderModel.createQueryBuilder('o')
+        .select("DATE(o.created_at)", 'date')
+        .addSelect('COALESCE(SUM(o.amount),0)', 'amount')
+        .where('o.is_deleted = 0')
+        .andWhere("DATE(o.created_at) >= :start", { start: sevenDaysAgoStr })
+        .groupBy("DATE(o.created_at)")
+        .orderBy('date', 'ASC')
+        .getRawMany(),
+
+      // GMV类型分布
+      this.orderModel.createQueryBuilder('o')
+        .select('o.type', 'type')
+        .addSelect('COALESCE(SUM(o.amount),0)', 'value')
+        .where('o.is_deleted = 0')
+        .groupBy('o.type')
+        .getRawMany(),
     ]);
 
     // 今日数据
@@ -114,6 +134,12 @@ export class DashboardController {
       userMap[d] = Number(r.count);
     });
 
+    const gmvMap: Record<string, number> = {};
+    gmvTrend.forEach((r: any) => {
+      const d = typeof r.date === 'string' ? r.date.slice(0, 10) : localDate(new Date(r.date));
+      gmvMap[d] = Number(r.amount);
+    });
+
     return {
       success: true,
       data: {
@@ -125,7 +151,12 @@ export class DashboardController {
         totalMerchants,
         orderTrend: days.map(d => orderMap[d] || 0),
         userTrend: days.map(d => userMap[d] || 0),
+        gmvTrend: days.map(d => Number((gmvMap[d] || 0).toFixed(2))),
         orderTypeDistribution: orderTypeDistribution.map((r: any) => ({
+          name: r.type,
+          value: Number(r.value),
+        })),
+        gmvTypeDistribution: gmvTypeDistribution.map((r: any) => ({
           name: r.type,
           value: Number(r.value),
         })),
