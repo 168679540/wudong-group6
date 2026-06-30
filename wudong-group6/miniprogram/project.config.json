@@ -1,9 +1,31 @@
 {
   "description": "乌东文旅小程序",
-  "packOptions": { "ignore": [] },
-  "setting": { "urlCheck": false, "es6": true, "postcss": true, "minified": true },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "coverView": false,
+    "enhance": false,
+    "showShadowRootInWxmlPanel": false,
+    "packNpmRelationList": [],
+    "ignoreUploadUnusedFiles": true
+  },
   "compileType": "miniprogram",
-  "appid": "wx0000000000000000",
-  "projectname": "wudong-travel",
-  "condition": {}
+  "condition": {},
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  },
+  "libVersion": "3.16.1",
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "appid": "wxf40d840005439715"
 }

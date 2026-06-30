@@ -15,13 +15,12 @@ Page({ data: { list: [], cats: ['全部'], cat: '', minPrice: '', maxPrice: '', 
     var sizes = specs['尺寸'] || specs['size'] || [];
     var colors = specs['颜色'] || specs['color'] || [];
     var bt = Object.assign({}, p); bt.coverImage = fixImg(bt.coverImage);
-    this._pickerTs = Date.now();
     this.setData({ buyTarget: bt, specQty: 1, specSizes: sizes, specColors: colors, specSizeIdx: 0, specColorIdx: 0 });
   },
   openBuy(e) { this.openBuyById(e.currentTarget.dataset.id); },
-  closeBuy() { if (Date.now() - this._pickerTs < 500) return; this.setData({ buyTarget: null }); },
-  onSizeChange(e) { this.setData({ specSizeIdx: Number(e.detail.value) }); this._pickerTs = Date.now(); },
-  onColorChange(e) { this.setData({ specColorIdx: Number(e.detail.value) }); this._pickerTs = Date.now(); },
+  closeBuy() { this.setData({ buyTarget: null }); },
+  onSizeChange(e) { this.setData({ specSizeIdx: Number(e.detail.value) }); },
+  onColorChange(e) { this.setData({ specColorIdx: Number(e.detail.value) }); },
   onQty(e) { this.setData({ specQty: Number(e.detail.value) || 1 }); },
   doBuy() { var p = this.data.buyTarget; if (!p) return;
     var size = this.data.specSizes[this.data.specSizeIdx] || '';
