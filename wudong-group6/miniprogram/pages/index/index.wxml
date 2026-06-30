@@ -15,7 +15,7 @@
   </view>
 
   <!-- 公告 -->
-  <view class="card" style="margin-bottom:24rpx;color:#fa8c16">
+  <view class="card" style="margin-bottom:24rpx;color:#d4a14b" bindtap="showAnnouncement">
     📢 乌东文旅平台全新上线！欢迎探索苗族非遗文化
   </view>
 

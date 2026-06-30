@@ -21,5 +21,6 @@ Page({
     api.getNotes({ pageSize: 6 }).then(r => r.success && this.setData({ statCards: this.data.statCards.map((c, i) => i === 2 ? { ...c, num: r.total } : c) }));
     api.getStats().then(r => r.success && this.setData({ statCards: this.data.statCards.map((c, i) => i === 0 ? { ...c, num: r.data.totalMerchants } : i === 3 ? { ...c, num: r.data.totalUsers } : c) }));
   },
+  showAnnouncement() { wx.showModal({ title: '📢 平台公告', content: '乌东文旅平台全新上线！\n\n欢迎探索苗族非遗文化——衣·非遗商品、食·餐饮美食、住·民宿住宿、行·线路门票、社区·游记分享，一站式体验乌东苗寨的衣食住行。\n\n新商家可点击首页底部「商家入驻申请」加入我们！', showCancel: false, confirmText: '我知道了' }); },
   goPage(e) { var url = e.currentTarget.dataset.url; url && wx.switchTab({ url }).catch(function() { wx.navigateTo({ url: url }); }); }
 });
