@@ -10,6 +10,30 @@
     </view>
   </view>
 
+  <!-- 发布弹窗 -->
+  <view class="mask" wx:if="{{publishOpen}}" catchtouchmove="noop">
+    <view class="popup" catchtouchmove="noop">
+      <view style="font-size:36rpx;font-weight:bold;margin-bottom:24rpx">✍️ 发布游记</view>
+      <view style="margin-bottom:16rpx"><text style="color:#f5222d">*</text> 昵称</view>
+      <input style="border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx;margin-bottom:16rpx" placeholder="你的昵称" value="游客"/>
+      <view style="margin-bottom:16rpx"><text style="color:#f5222d">*</text> 标题</view>
+      <input value="{{publishTitle}}" bindinput="onPublishTitle" style="border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx;margin-bottom:16rpx" placeholder="游记标题"/>
+      <view style="margin-bottom:16rpx">地点</view>
+      <input value="{{publishLocation}}" bindinput="onPublishLocation" style="border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx;margin-bottom:16rpx" placeholder="如：乌东苗寨"/>
+      <view style="margin-bottom:16rpx">封面图片</view>
+      <view style="display:flex;gap:12rpx;margin-bottom:16rpx">
+        <image wx:if="{{publishCover}}" src="{{publishCover}}" style="width:160rpx;height:160rpx;border-radius:12rpx" mode="aspectFill"/>
+        <button size="mini" bindtap="chooseImage">选择图片</button>
+      </view>
+      <view style="margin-bottom:16rpx"><text style="color:#f5222d">*</text> 内容</view>
+      <textarea value="{{publishContent}}" bindinput="onPublishContent" style="border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx;min-height:200rpx;width:100%;margin-bottom:24rpx" placeholder="分享你的旅行故事..." maxlength="5000"/>
+      <view style="display:flex;gap:16rpx">
+        <button style="flex:1" bindtap="closePublish">取消</button>
+        <button type="primary" style="flex:1" bindtap="doPublish">发布</button>
+      </view>
+    </view>
+  </view>
+
   <!-- 详情弹窗 -->
   <view class="mask" wx:if="{{detail}}" catchtouchmove="noop">
     <view class="popup" catchtouchmove="noop">
