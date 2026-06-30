@@ -1,0 +1,13 @@
+<view class="container">
+  <view class="card" wx:for="{{list}}" wx:key="id">
+    <view style="display:flex;justify-content:space-between;align-items:center">
+      <text><text class="tag tag-blue">{{item.type}}</text> {{item.orderNo}}</text>
+      <text class="tag {{item.status===1?'tag-green':item.status===2?'tag-blue':item.status===0?'tag-orange':''}}">{{statusMap[item.status]}}</text>
+    </view>
+    <view style="display:flex;gap:16rpx;margin-top:12rpx">
+      <image src="{{item.itemImage}}" style="width:100rpx;height:100rpx;border-radius:12rpx" mode="aspectFill" wx:if="{{item.itemImage}}"/>
+      <view style="flex:1"><view>{{item.itemName||'-'}}</view><view class="price" style="font-size:30rpx">¥{{item.amount}}</view><view style="color:#999;font-size:22rpx">{{item.createdAt}}</view></view>
+    </view>
+    <button size="mini" type="warn" wx:if="{{item.status===1}}" bindtap="cancel" data-id="{{item.id}}" style="margin-top:8rpx">取消订单</button>
+  </view>
+</view>

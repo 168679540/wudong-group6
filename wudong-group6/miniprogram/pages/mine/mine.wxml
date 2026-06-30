@@ -1,0 +1,17 @@
+<view class="container">
+  <view class="card" style="text-align:center;padding:40rpx">
+    <view style="font-size:48rpx;margin-bottom:8rpx">👤</view>
+    <view style="font-size:32rpx;font-weight:bold">游客用户</view>
+  </view>
+  <view class="card" wx:for="{{menus}}" wx:key="key" bindtap="goPage" data-url="{{item.url}}" style="display:flex;justify-content:space-between;align-items:center">
+    <text>{{item.icon}} {{item.label}}</text>
+    <text style="color:#999">→</text>
+  </view>
+  <view class="card" style="margin-top:24rpx">
+    <view style="font-weight:bold;margin-bottom:12rpx">📬 消息通知</view>
+    <view wx:for="{{messages}}" wx:key="id" style="padding:12rpx 0;border-bottom:1px solid #f0f0f0">
+      <text class="tag tag-blue">{{item.type}}</text> {{item.title}}
+    </view>
+    <view wx:if="{{messages.length===0}}" style="color:#999">暂无消息</view>
+  </view>
+</view>

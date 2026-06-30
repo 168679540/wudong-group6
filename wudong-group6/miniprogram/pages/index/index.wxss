@@ -1,0 +1,5 @@
+.grid { display: flex; flex-wrap: wrap; background: #fff; border-radius: 12px; padding: 16px 0; margin-bottom: 16px; }
+.grid-item { width: 33.3%; text-align: center; padding: 16px 0; font-size: 24rpx; }
+.grid-icon { font-size: 48rpx; margin-bottom: 8rpx; }
+.section-title { font-size: 32rpx; font-weight: bold; margin-bottom: 12px; }
+.hot-item { display: inline-block; width: 240rpx; margin-right: 16rpx; }

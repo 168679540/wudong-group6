@@ -1,0 +1,9 @@
+{
+  "description": "乌东文旅小程序",
+  "packOptions": { "ignore": [] },
+  "setting": { "urlCheck": false, "es6": true, "postcss": true, "minified": true },
+  "compileType": "miniprogram",
+  "appid": "wx0000000000000000",
+  "projectname": "wudong-travel",
+  "condition": {}
+}

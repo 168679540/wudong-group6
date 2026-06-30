@@ -1,0 +1,20 @@
+<view class="container">
+  <view style="margin-bottom:16rpx">
+    <text class="tag {{type===''?'tag-blue':'tag-green'}}" bindtap="setType" data-t="">全部</text>
+    <text class="tag {{type==='门票'?'tag-blue':'tag-green'}}" bindtap="setType" data-t="门票">🎫 门票</text>
+    <text class="tag {{type==='路线'?'tag-blue':'tag-green'}}" bindtap="setType" data-t="路线">🗺️ 路线</text>
+  </view>
+  <view class="card" wx:for="{{list}}" wx:key="id">
+    <image src="{{item.coverImage}}" style="width:100%;height:300rpx;border-radius:12rpx" mode="aspectFill"/>
+    <view style="font-weight:bold;font-size:30rpx;margin-top:12rpx">{{item.name}}</view>
+    <text class="tag tag-blue">{{item.type}}</text>
+    <view class="price" style="font-size:32rpx;margin-top:8rpx">¥{{item.price}}</view>
+    <button size="mini" type="primary" style="margin-top:12rpx" bindtap="buy" data-id="{{item.id}}">立即购买</button>
+  </view>
+  <!-- 交通攻略 -->
+  <view class="section-title" wx:if="{{traffic.length}}">🚗 交通攻略</view>
+  <view class="card" wx:for="{{traffic}}" wx:key="id">
+    <view style="font-weight:bold">{{item.title}}</view>
+    <view style="color:#666;font-size:24rpx">📍 {{item.origin}}→{{item.destination}} | ⏱{{item.duration}} | 💰{{item.cost}}</view>
+  </view>
+</view>

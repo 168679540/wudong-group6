@@ -1,0 +1,14 @@
+<view class="container">
+  <view class="card">
+    <view style="font-weight:bold;font-size:32rpx;margin-bottom:24rpx">商家入驻申请</view>
+    <view style="margin-bottom:16rpx"><text style="color:#f5222d">*</text> 入驻类型</view>
+    <picker bindchange="onModule" value="{{moduleIndex}}" range="{{modules}}" range-key="label"><view class="picker">{{modules[moduleIndex].label}}</view></picker>
+    <view style="margin-bottom:16rpx;margin-top:16rpx"><text style="color:#f5222d">*</text> 店铺名称</view>
+    <input value="{{shopName}}" bindinput="onShopName" placeholder="店铺名称" style="border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx"/>
+    <view style="margin-bottom:16rpx;margin-top:16rpx"><text style="color:#f5222d">*</text> 联系人</view>
+    <input value="{{contactName}}" bindinput="onContactName" placeholder="联系人姓名" style="border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx"/>
+    <view style="margin-bottom:16rpx;margin-top:16rpx"><text style="color:#f5222d">*</text> 联系电话</view>
+    <input value="{{contactPhone}}" bindinput="onContactPhone" placeholder="手机号" style="border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx"/>
+    <button type="primary" style="margin-top:24rpx" bindtap="submit">提交申请</button>
+  </view>
+</view>

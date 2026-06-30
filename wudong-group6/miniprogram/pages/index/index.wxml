@@ -1,0 +1,42 @@
+<view class="container">
+  <!-- 轮播图 -->
+  <swiper autoplay circular style="height:360rpx;border-radius:16rpx;overflow:hidden;margin-bottom:24rpx">
+    <swiper-item wx:for="{{banners}}" wx:key="id">
+      <image src="{{item.imageUrl}}" style="width:100%;height:100%" mode="aspectFill"/>
+    </swiper-item>
+  </swiper>
+
+  <!-- 金刚区 -->
+  <view class="grid">
+    <view class="grid-item" wx:for="{{modules}}" wx:key="key" bindtap="goPage" data-url="{{item.url}}">
+      <view class="grid-icon">{{item.icon}}</view>
+      <text>{{item.name}}</text>
+    </view>
+  </view>
+
+  <!-- 公告 -->
+  <view class="card" style="margin-bottom:24rpx;color:#fa8c16">
+    📢 乌东文旅平台全新上线！欢迎探索苗族非遗文化
+  </view>
+
+  <!-- 热门推荐 -->
+  <view class="section-title">🔥 热门推荐</view>
+  <scroll-view scroll-x style="white-space:nowrap;margin-bottom:24rpx">
+    <view class="hot-item" wx:for="{{hotProducts}}" wx:key="id" bindtap="goPage" data-url="/pages/product/product">
+      <image src="{{item.coverImage}}" style="width:240rpx;height:180rpx;border-radius:12rpx" mode="aspectFill"/>
+      <view style="font-size:26rpx;margin-top:8rpx">{{item.name}}</view>
+      <view class="price">¥{{item.price}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 数字统计 -->
+  <view class="card" style="display:flex;justify-content:space-around">
+    <view wx:for="{{statCards}}" wx:key="label" style="text-align:center">
+      <view class="price" style="font-size:36rpx">{{item.num}}</view>
+      <text style="color:#999;font-size:24rpx">{{item.label}}</text>
+    </view>
+  </view>
+
+  <!-- 商家入驻入口 -->
+  <view class="btn-primary" style="margin-top:24rpx" bindtap="goPage" data-url="/pages/join/join">商家入驻申请 →</view>
+</view>
