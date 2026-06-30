@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Layout, Menu, Table, Tag, Image, Button, Spin, Empty, message, Popconfirm } from 'antd';
 import { ArrowLeftOutlined, OrderedListOutlined, UndoOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { getOrderList, returnOrder, Order } from '../api/order';
+import { getOrderList, returnOrder, refundOrder, Order } from '../api/order';
 import CartDrawer from '../components/CartDrawer';
 
 const { Header, Content, Footer } = Layout;
@@ -58,6 +58,14 @@ const MyOrders: React.FC = () => {
     } catch { message.error('操作失败'); }
   };
 
+  const handleCancel = async (id: number) => {
+    try {
+      const res: any = await refundOrder(id);
+      if (res.success) { message.success('订单已取消'); fetchOrders(pagination.current, pagination.pageSize); }
+      else message.error(res.message || '取消失败');
+    } catch { message.error('操作失败'); }
+  };
+
   const columns = [
     { title: '序号', key: 'index', width: 55, render: (_: any, __: any, i: number) => (pagination.current - 1) * pagination.pageSize + i + 1 },
     { title: '商品图', dataIndex: 'itemImage', width: 80, render: (v: string) => <Image src={v || 'https://via.placeholder.com/60'} width={55} height={55} style={{ borderRadius: 6, objectFit: 'cover' }} fallback="https://via.placeholder.com/60" /> },
@@ -69,7 +77,12 @@ const MyOrders: React.FC = () => {
     { title: '物流', key: 'express', width: 160, render: (_: any, r: Order) => r.expressNo ? <span style={{ fontSize: 12 }}>{r.expressCompany}<br />{r.expressNo}</span> : <span style={{ color: '#999' }}>-</span> },
     { title: '下单时间', dataIndex: 'createdAt', width: 160, render: (v: string) => formatTime(v) },
     { title: '操作', key: 'action', width: 80,
-      render: (_: any, r: Order) => r.status === 2 ? <Popconfirm title="确定退货退款？(7天内)" onConfirm={() => handleReturn(r.id)}><Button size="small" icon={<UndoOutlined />}>退货</Button></Popconfirm> : null },
+      render: (_: any, r: Order) => (
+        <>
+          {r.status === 1 && <Popconfirm title="确定取消？" onConfirm={() => handleCancel(r.id)}><Button size="small" danger>取消</Button></Popconfirm>}
+          {r.status === 2 && r.type === '商品' && <Popconfirm title="确定退货退款？(7天内)" onConfirm={() => handleReturn(r.id)}><Button size="small" icon={<UndoOutlined />}>退货</Button></Popconfirm>}
+        </>
+      )},
   ];
 
   return (
