@@ -12,9 +12,20 @@
     <button size="mini" type="primary" style="margin-top:12rpx" bindtap="openBuy" data-id="{{item.id}}">立即购买</button>
   </view>
   <view class="section-title" wx:if="{{traffic.length}}">🚗 交通攻略</view>
-  <view class="card" wx:for="{{traffic}}" wx:key="id">
+  <view class="card" wx:for="{{traffic}}" wx:key="id" bindtap="openTraffic" data-id="{{item.id}}">
     <view style="font-weight:bold">{{item.title}}</view>
     <view style="color:#666;font-size:24rpx">📍 {{item.origin}}→{{item.destination}} | ⏱{{item.duration}} | 💰{{item.cost}}</view>
+  </view>
+  <!-- 交通攻略详情弹窗 -->
+  <view class="mask" wx:if="{{trafficDetail}}" catchtouchmove="noop">
+    <view class="popup" catchtouchmove="noop">
+      <view style="font-weight:bold;font-size:34rpx;margin-bottom:16rpx">{{trafficDetail.title}}</view>
+      <view style="color:#666;margin-bottom:8rpx">📍 {{trafficDetail.origin}} → {{trafficDetail.destination}}</view>
+      <view style="color:#666;margin-bottom:8rpx">🚗 {{trafficDetail.transportType}} | ⏱ {{trafficDetail.duration}}</view>
+      <view style="color:#666;margin-bottom:16rpx">💰 {{trafficDetail.cost}}</view>
+      <view style="background:#fafafa;padding:20rpx;border-radius:12rpx;line-height:1.8;font-size:28rpx;margin-bottom:24rpx">{{trafficDetail.content||'暂无详情'}}</view>
+      <button bindtap="closeTraffic">关闭</button>
+    </view>
   </view>
   <!-- 购买弹窗 -->
   <view class="mask" wx:if="{{buyTarget}}" catchtouchmove="noop">
