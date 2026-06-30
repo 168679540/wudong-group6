@@ -5,6 +5,7 @@ import * as info from '@midwayjs/info';
 import * as typeorm from '@midwayjs/typeorm';
 import { join } from 'path';
 import { ReportMiddleware } from './middleware/report.middleware';
+import { OperationLogMiddleware } from './middleware/operation-log.middleware';
 
 @Configuration({
   imports: [
@@ -42,6 +43,6 @@ export class MainConfiguration {
       await next();
     });
 
-    this.app.useMiddleware([ReportMiddleware]);
+    this.app.useMiddleware([ReportMiddleware, OperationLogMiddleware]);
   }
 }
