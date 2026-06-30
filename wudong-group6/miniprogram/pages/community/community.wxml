@@ -20,11 +20,8 @@
       <input value="{{publishTitle}}" bindinput="onPublishTitle" style="border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx;margin-bottom:16rpx" placeholder="游记标题"/>
       <view style="margin-bottom:16rpx">地点</view>
       <input value="{{publishLocation}}" bindinput="onPublishLocation" style="border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx;margin-bottom:16rpx" placeholder="如：乌东苗寨"/>
-      <view style="margin-bottom:16rpx">封面图片</view>
-      <view style="display:flex;gap:12rpx;margin-bottom:16rpx">
-        <image wx:if="{{publishCover}}" src="{{publishCover}}" style="width:160rpx;height:160rpx;border-radius:12rpx" mode="aspectFill"/>
-        <button size="mini" bindtap="chooseImage">选择图片</button>
-      </view>
+      <view style="margin-bottom:16rpx">封面图URL（可选，如 /images/note1.jpg）</view>
+      <input value="{{publishCover}}" bindinput="onPublishCover" style="border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx;margin-bottom:16rpx" placeholder="图片链接（可选，留空默认无图）"/>
       <view style="margin-bottom:16rpx"><text style="color:#f5222d">*</text> 内容</view>
       <textarea value="{{publishContent}}" bindinput="onPublishContent" style="border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx;min-height:200rpx;width:100%;margin-bottom:24rpx" placeholder="分享你的旅行故事..." maxlength="5000"/>
       <view style="display:flex;gap:16rpx">
