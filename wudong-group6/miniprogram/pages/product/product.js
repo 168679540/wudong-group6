@@ -7,10 +7,10 @@ Page({ data: { list: [], cats: ['全部'], cat: '', minPrice: '', maxPrice: '', 
   setCat(e) { var c = e.currentTarget.dataset.c; this.setData({ cat: c === '全部' ? '' : c }); this.load(); },
   onMin(e) { this.setData({ minPrice: e.detail.value }); this.load(); },
   onMax(e) { this.setData({ maxPrice: e.detail.value }); this.load(); },
-  openDetail(e) { var id = e.currentTarget.dataset.id; var p = this.data.list.find(x => x.id === id); if (p) { var d = Object.assign({}, p); d.coverImage = fixImg(d.coverImage); this.setData({ detail: d }); } },
+  openDetail(e) { var id = e.currentTarget.dataset.id; var p = this.data.list.find(x => x.id == id); if (p) { var d = Object.assign({}, p); d.coverImage = fixImg(d.coverImage); this.setData({ detail: d }); } },
   closeDetail() { this.setData({ detail: null }); },
   buyFromDetail() { var p = this.data.detail; this.setData({ detail: null }); if (p) this.openBuyById(p.id); },
-  openBuyById(id) { var p = this.data.list.find(x => x.id === id); if (!p) return;
+  openBuyById(id) { var p = this.data.list.find(x => x.id == id); if (!p) return;
     var specs = {}; try { if (p.specs) specs = typeof p.specs === 'string' ? JSON.parse(p.specs) : p.specs; } catch(_){}
     var sizes = specs['尺寸'] || specs['size'] || [];
     var colors = specs['颜色'] || specs['color'] || [];

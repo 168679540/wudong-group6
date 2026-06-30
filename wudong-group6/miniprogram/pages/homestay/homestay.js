@@ -3,7 +3,7 @@ function fixImg(url) { if (!url) return ''; return url.startsWith('/') ? IMG + u
 var api = require('../../utils/api');
 Page({ data: { list: [], bookTarget: null, checkIn: '', checkOut: '', roomType: '标准间', rooms: 1 },
   onLoad() { api.getHomestays({ pageSize: 50 }).then(r => { if (r.success) { var list = (r.data || []).map(function(x) { x.coverImage = fixImg(x.coverImage); return x; }); this.setData({ list: list }); } }); },
-  openBook(e) { var h = this.data.list.find(x => x.id === e.currentTarget.dataset.id); if (!h) return; this.setData({ bookTarget: h, checkIn: '', checkOut: '', roomType: '标准间', rooms: 1 }); },
+  openBook(e) { var h = this.data.list.find(x => x.id == e.currentTarget.dataset.id); if (!h) return; this.setData({ bookTarget: h, checkIn: '', checkOut: '', roomType: '标准间', rooms: 1 }); },
   closeBook() { this.setData({ bookTarget: null }); },
   onCheckIn(e) { this.setData({ checkIn: e.detail.value }); },
   onCheckOut(e) { this.setData({ checkOut: e.detail.value }); },
