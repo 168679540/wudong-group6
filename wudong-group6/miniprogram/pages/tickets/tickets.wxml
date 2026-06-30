@@ -9,12 +9,23 @@
     <view style="font-weight:bold;font-size:30rpx;margin-top:12rpx">{{item.name}}</view>
     <text class="tag tag-blue">{{item.type}}</text>
     <view class="price" style="font-size:32rpx;margin-top:8rpx">¥{{item.price}}</view>
-    <button size="mini" type="primary" style="margin-top:12rpx" bindtap="buy" data-id="{{item.id}}">立即购买</button>
+    <button size="mini" type="primary" style="margin-top:12rpx" bindtap="openBuy" data-id="{{item.id}}">立即购买</button>
   </view>
-  <!-- 交通攻略 -->
   <view class="section-title" wx:if="{{traffic.length}}">🚗 交通攻略</view>
   <view class="card" wx:for="{{traffic}}" wx:key="id">
     <view style="font-weight:bold">{{item.title}}</view>
     <view style="color:#666;font-size:24rpx">📍 {{item.origin}}→{{item.destination}} | ⏱{{item.duration}} | 💰{{item.cost}}</view>
+  </view>
+  <!-- 购买弹窗 -->
+  <view class="mask" wx:if="{{buyTarget}}">
+    <view class="popup">
+      <image src="{{buyTarget.coverImage}}" style="width:100%;height:240rpx;border-radius:12rpx;margin-bottom:16rpx" mode="aspectFill"/>
+      <view style="font-weight:bold;font-size:30rpx">{{buyTarget.name}}</view>
+      <view style="display:flex;gap:16rpx;margin-top:16rpx;margin-bottom:16rpx"><text style="flex:1;line-height:64rpx;color:#666">票种</text><input value="{{ticketType}}" bindinput="onTicketType" style="flex:2;border:1px solid #e5e5e5;border-radius:8rpx;padding:16rpx;text-align:center"/></view>
+      <view style="display:flex;gap:16rpx;margin-bottom:16rpx"><text style="flex:1;line-height:64rpx;color:#666">数量</text><input value="{{qty}}" bindinput="onQty" type="number" style="flex:2;border:1px solid #e5e5e5;border-radius:8rpx;padding:16rpx;text-align:center"/></view>
+      <view style="display:flex;gap:16rpx;margin-bottom:16rpx"><text style="flex:1;line-height:64rpx;color:#666">日期</text><picker mode="date" value="{{visitDate}}" bindchange="onVisitDate" style="flex:2"><view style="border:1px solid #1890ff;border-radius:8rpx;padding:16rpx;text-align:center;background:#e6f7ff">{{visitDate||'选择日期'}}</view></picker></view>
+      <view style="background:#fff7e6;border-radius:12rpx;padding:16rpx;display:flex;justify-content:space-between;margin-bottom:24rpx"><text>合计</text><text class="price" style="font-size:40rpx">¥{{buyTarget.price * qty}}</text></view>
+      <view style="display:flex;gap:16rpx"><button style="flex:1" bindtap="closeBuy">取消</button><button type="primary" style="flex:1" bindtap="doBuy">确认购买</button></view>
+    </view>
   </view>
 </view>
