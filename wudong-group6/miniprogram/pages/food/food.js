@@ -10,8 +10,7 @@ Page({ data: { list: [], agro: [], bookTarget: null, partySize: 2, reserveDate: 
       if (r.success) { var agro = (r.data || []).map(function(x) { x.coverImage = fixImg(x.coverImage); return x; }); this.setData({ agro: agro }); }
     });
   },
-  openBook(e) { var r = this.data.list.find(x => x.id === e.currentTarget.dataset.id); if (!r) return; this.setData({ bookTarget: r, partySize: 2, reserveDate: '', reserveTime: '' });
-    api.getMealSlots(r.id).then(res => res.success && this.setData({ slots: res.data || [] })); },
+  openBook(e) { var r = this.data.list.find(x => x.id === e.currentTarget.dataset.id); if (!r) return; this.setData({ bookTarget: r, partySize: 2, reserveDate: '', reserveTime: '', slots: [] }); },
   closeBook() { this.setData({ bookTarget: null }); },
   onPartySize(e) { this.setData({ partySize: Number(e.detail.value) || 2 }); },
   onReserveDate(e) { this.setData({ reserveDate: e.detail.value }); },
