@@ -9,4 +9,24 @@
       <text class="tag tag-orange" bindtap="like" data-id="{{item.id}}" catchtap="like">❤️ {{item.likeCount}}</text>
     </view>
   </view>
+
+  <!-- 详情弹窗 -->
+  <view class="mask" wx:if="{{detail}}" catchtouchmove="noop">
+    <view class="popup" catchtouchmove="noop">
+      <image src="{{detail.coverImage}}" style="width:100%;max-height:500rpx;border-radius:12rpx;margin-bottom:16rpx" mode="aspectFill" wx:if="{{detail.coverImage}}"/>
+      <view style="font-size:36rpx;font-weight:bold;margin-bottom:8rpx">{{detail.title}}</view>
+      <view style="color:#999;font-size:24rpx;margin-bottom:8rpx">{{detail.authorName}} · {{detail.location}} | 👁{{detail.viewCount}} ❤️{{detail.likeCount}}</view>
+      <view style="background:#fafafa;padding:20rpx;border-radius:12rpx;line-height:1.8;font-size:28rpx;margin-bottom:20rpx;white-space:pre-wrap">{{detail.content||'暂无内容'}}</view>
+      <view style="font-weight:bold;margin-bottom:12rpx">评论 ({{comments.length}})</view>
+      <view wx:for="{{comments}}" wx:key="id" style="padding:12rpx 0;border-bottom:1px solid #f0f0f0">
+        <view style="font-size:26rpx">{{item.content}}</view>
+        <view style="color:#999;font-size:22rpx">用户{{item.userId}} · {{item.createdAt}}</view>
+      </view>
+      <view style="display:flex;gap:8rpx;margin-top:16rpx">
+        <input value="{{commentText}}" bindinput="onCommentInput" placeholder="写评论..." style="flex:1;border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx;font-size:26rpx"/>
+        <button size="mini" type="primary" bindtap="sendComment">发送</button>
+      </view>
+      <button style="margin-top:16rpx" bindtap="closeDetail">关闭</button>
+    </view>
+  </view>
 </view>
