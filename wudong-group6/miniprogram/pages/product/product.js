@@ -8,6 +8,7 @@ Page({ data: { list: [], cats: ['全部'], cat: '', minPrice: '', maxPrice: '', 
   onMin(e) { this.setData({ minPrice: e.detail.value }); this.load(); },
   onMax(e) { this.setData({ maxPrice: e.detail.value }); this.load(); },
   openDetail(e) { var id = e.currentTarget.dataset.id; var p = this.data.list.find(x => x.id == id); if (p) { var d = Object.assign({}, p); d.coverImage = fixImg(d.coverImage); this.setData({ detail: d }); } },
+  noop() {},
   closeDetail() { this.setData({ detail: null }); },
   buyFromDetail() { var p = this.data.detail; this.setData({ detail: null }); if (p) this.openBuyById(p.id); },
   openBuyById(id) { var p = this.data.list.find(x => x.id == id); if (!p) return;

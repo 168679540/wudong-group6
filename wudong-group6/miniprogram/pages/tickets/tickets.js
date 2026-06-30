@@ -6,6 +6,7 @@ Page({ data: { list: [], traffic: [], type: '', buyTarget: null, ticketType: '�
   load() { var p = { pageSize: 50 }; if (this.data.type) p.type = this.data.type; api.getTickets(p).then(r => { if (r.success) { var list = (r.data || []).map(function(x) { x.coverImage = fixImg(x.coverImage); return x; }); this.setData({ list: list }); } }); },
   setType(e) { this.setData({ type: e.currentTarget.dataset.t }); this.load(); },
   openBuy(e) { var t = this.data.list.find(x => x.id == e.currentTarget.dataset.id); if (!t) return; this.setData({ buyTarget: t, ticketType: '成人票', qty: 1, visitDate: '' }); },
+  noop() {},
   closeBuy() { this.setData({ buyTarget: null }); },
   onTicketType(e) { this.setData({ ticketType: e.detail.value }); },
   onQty(e) { this.setData({ qty: Number(e.detail.value) || 1 }); },

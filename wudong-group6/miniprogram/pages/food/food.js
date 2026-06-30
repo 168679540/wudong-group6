@@ -11,6 +11,7 @@ Page({ data: { list: [], agro: [], bookTarget: null, partySize: 2, reserveDate: 
     });
   },
   openBook(e) { console.log('openBook', e.currentTarget.dataset); var r = this.data.list.find(x => String(x.id) === String(e.currentTarget.dataset.id)); console.log('found', r); if (!r) return; this.setData({ bookTarget: r, partySize: 2, reserveDate: '' }); },
+  noop() {},
   closeBook() { this.setData({ bookTarget: null }); },
   onPartySize(e) { this.setData({ partySize: Number(e.detail.value) || 2 }); },
   onReserveDate(e) { this.setData({ reserveDate: e.detail.value }); },
