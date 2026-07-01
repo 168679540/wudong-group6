@@ -3,6 +3,7 @@ function fixImg(url) { if (!url) return ''; return url.startsWith('/') ? IMG + u
 var api = require('../../utils/api');
 Page({ data: { list: [], cats: ['全部'], cat: '', minPrice: '', maxPrice: '', detail: null, buyTarget: null, specQty: 1, specSizes: [], specColors: [], specSizeIdx: 0, specColorIdx: 0 },
   onLoad() { api.getCategories().then(r => r.success && this.setData({ cats: ['全部', ...r.data.map(c => c.name)] })); this.load(); },
+  onShow() { var id = wx.getStorageSync('wudong_goto_product'); if (id) { wx.removeStorageSync('wudong_goto_product'); var that = this; setTimeout(function() { that.openDetail({ currentTarget: { dataset: { id: id } } }); }, 300); } },
   load() { var p = { pageSize: 50 }; if (this.data.cat) p.category = this.data.cat; if (this.data.minPrice) p.minPrice = Number(this.data.minPrice); if (this.data.maxPrice) p.maxPrice = Number(this.data.maxPrice); api.getProducts(p).then(r => { if (r.success) { var list = (r.data || []).map(function(item) { item.coverImage = fixImg(item.coverImage); return item; }); this.setData({ list: list }); } }); },
   setCat(e) { var c = e.currentTarget.dataset.c; this.setData({ cat: c === '全部' ? '' : c }); this.load(); },
   onMin(e) { this.setData({ minPrice: e.detail.value }); this.load(); },
