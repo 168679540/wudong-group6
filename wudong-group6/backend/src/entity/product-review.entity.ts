@@ -3,7 +3,10 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 @Entity('product_review')
 export class ProductReview {
   @PrimaryGeneratedColumn({ type: 'int', unsigned: true }) id: number;
-  @Column({ name: 'product_id', type: 'int', unsigned: true }) productId: number;
+  @Column({ name: 'product_id', type: 'int', unsigned: true, nullable: true }) productId: number;
+  @Column({ name: 'restaurant_id', type: 'int', unsigned: true, nullable: true }) restaurantId: number;
+  @Column({ name: 'homestay_id', type: 'int', unsigned: true, nullable: true }) homestayId: number;
+  @Column({ name: 'ticket_id', type: 'int', unsigned: true, nullable: true }) ticketId: number;
   @Column({ name: 'user_id', type: 'int', unsigned: true, default: 1 }) userId: number;
   @Column({ type: 'tinyint', default: 5 }) rating: number;
   @Column({ type: 'varchar', length: 500, nullable: true }) content: string;
