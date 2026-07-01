@@ -24,6 +24,10 @@ function lastSevenDays(): string[] {
   return result;
 }
 
+// 将 UTC 的 created_at 转为北京时间再用 DATE() 截取日期
+const BJ_DATE = "DATE(CONVERT_TZ(o.created_at, '+00:00', '+08:00'))";
+const BJ_USER_DATE = "DATE(CONVERT_TZ(u.created_at, '+00:00', '+08:00'))";
+
 @Controller('/api/dashboard')
 export class DashboardController {
   @Inject()
@@ -62,22 +66,22 @@ export class DashboardController {
       this.applicationModel.createQueryBuilder('a').where('a.is_deleted = 0').andWhere('a.status = 0').getCount(),
       this.merchantModel.createQueryBuilder('m').where('m.is_deleted = 0').getCount(),
 
-      // 订单趋势：SELECT 和 GROUP BY 表达式必须完全一致
+      // 订单趋势（北京时间）
       this.orderModel.createQueryBuilder('o')
-        .select("DATE(o.created_at)", 'date')
+        .select(BJ_DATE, 'date')
         .addSelect('COUNT(*)', 'count')
         .where('o.is_deleted = 0')
-        .andWhere("DATE(o.created_at) >= :start", { start: sevenDaysAgoStr })
-        .groupBy("DATE(o.created_at)")
+        .andWhere(BJ_DATE + " >= :start", { start: sevenDaysAgoStr })
+        .groupBy(BJ_DATE)
         .orderBy('date', 'ASC')
         .getRawMany(),
 
       this.userModel.createQueryBuilder('u')
-        .select("DATE(u.created_at)", 'date')
+        .select(BJ_USER_DATE, 'date')
         .addSelect('COUNT(*)', 'count')
         .where('u.is_deleted = 0')
-        .andWhere("DATE(u.created_at) >= :start", { start: sevenDaysAgoStr })
-        .groupBy("DATE(u.created_at)")
+        .andWhere(BJ_USER_DATE + " >= :start", { start: sevenDaysAgoStr })
+        .groupBy(BJ_USER_DATE)
         .orderBy('date', 'ASC')
         .getRawMany(),
 
@@ -89,13 +93,13 @@ export class DashboardController {
         .groupBy('o.type')
         .getRawMany(),
 
-      // GMV趋势
+      // GMV趋势（北京时间）
       this.orderModel.createQueryBuilder('o')
-        .select("DATE(o.created_at)", 'date')
+        .select(BJ_DATE, 'date')
         .addSelect('COALESCE(SUM(o.amount),0)', 'amount')
         .where('o.is_deleted = 0')
-        .andWhere("DATE(o.created_at) >= :start", { start: sevenDaysAgoStr })
-        .groupBy("DATE(o.created_at)")
+        .andWhere(BJ_DATE + " >= :start", { start: sevenDaysAgoStr })
+        .groupBy(BJ_DATE)
         .orderBy('date', 'ASC')
         .getRawMany(),
 
@@ -108,19 +112,19 @@ export class DashboardController {
         .getRawMany(),
     ]);
 
-    // 今日数据
+    // 今日数据（北京时间）
     const todayOrders = await this.orderModel.createQueryBuilder('o')
       .where('o.is_deleted = 0')
-      .andWhere("DATE(o.created_at) = :today", { today: todayStr })
+      .andWhere(BJ_DATE + " = :today", { today: todayStr })
       .getCount();
     const todayGMVResult = await this.orderModel.createQueryBuilder('o')
       .select('COALESCE(SUM(o.amount),0)', 'total')
       .where('o.is_deleted = 0')
-      .andWhere("DATE(o.created_at) = :today", { today: todayStr })
+      .andWhere(BJ_DATE + " = :today", { today: todayStr })
       .getRawOne();
     const todayUsers = await this.userModel.createQueryBuilder('u')
       .where('u.is_deleted = 0')
-      .andWhere("DATE(u.created_at) = :today", { today: todayStr })
+      .andWhere(BJ_USER_DATE + " = :today", { today: todayStr })
       .getCount();
 
     const orderMap: Record<string, number> = {};
@@ -164,7 +168,6 @@ export class DashboardController {
     };
   }
 
-  // 图表数据接口（兼容前端旧请求）
   @Get('/chart')
   async chart() {
     return this.stats();
