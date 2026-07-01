@@ -19,3 +19,4 @@ export { RecommendedContent } from './recommend.entity';
 export { Report } from './report.entity';
 export { UserFollow } from './user-follow.entity';
 export { CommissionConfig } from './commission-config.entity';
+export { RoomCalendar } from './room-calendar.entity';

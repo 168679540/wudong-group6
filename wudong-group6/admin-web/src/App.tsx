@@ -37,6 +37,9 @@ import OperationLogList from './pages/OperationLogList';
 import SensitiveWordList from './pages/SensitiveWordList';
 import RecommendList from './pages/RecommendList';
 import ReportList from './pages/ReportList';
+import RoomCalendar from './pages/RoomCalendar';
+import ETicketVerify from './pages/ETicketVerify';
+import MerchantDashboard from './pages/MerchantDashboard';
 import MyFavorites from './pages/MyFavorites';
 import MyOrders from './pages/MyOrders';
 import PublicHome from './pages/PublicHome';
@@ -108,6 +111,9 @@ function App() {
             <Route path="sensitive-words" element={<SensitiveWordList />} />
             <Route path="recommends" element={<RecommendList />} />
             <Route path="reports" element={<ReportList />} />
+            <Route path="room-calendar" element={<RoomCalendar />} />
+            <Route path="e-ticket-verify" element={<ETicketVerify />} />
+            <Route path="merchant-dashboard" element={<MerchantDashboard />} />
             <Route path="food" element={<FoodList />} />
             <Route path="homestay" element={<HomestayList />} />
             <Route path="tickets" element={<TravelTicketList />} />

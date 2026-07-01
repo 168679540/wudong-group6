@@ -29,4 +29,10 @@ import { Provide } from '@midwayjs/core';import { InjectEntityModel } from '@mid
     const top=await this.model.createQueryBuilder('t').select(['t.id','t.name','t.rating','t.type']).where('t.is_deleted=0').andWhere('t.status=1').orderBy('t.rating','DESC').limit(5).getRawMany();
     return {totalStock:Number(r?.stock)||0,avgPrice:Number(r?.avgp)||0,topRated:top,totalSold:0};
   }
+  async verifyETicket(code: string): Promise<Ticket|null> {
+    const t = await this.model.createQueryBuilder('t').where('t.e_ticket_code=:code',{code}).andWhere('t.e_ticket_status=0').getOne();
+    if (!t) return null;
+    t.eTicketStatus = 1;
+    return this.model.save(t);
+  }
 }

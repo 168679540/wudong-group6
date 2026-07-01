@@ -36,4 +36,10 @@ export class TicketController {
 
   @Get('/stats')
   async stats() { const data = await this.tService.stats(); return { success: true, data }; }
+
+  @Post('/verify')
+  async verify(@Body() body: { eTicketCode: string }) {
+    const ticket = await this.tService.verifyETicket(body.eTicketCode);
+    return ticket ? { success: true, message: '核销成功' } : { success: false, message: '电子票无效或已核销' };
+  }
 }

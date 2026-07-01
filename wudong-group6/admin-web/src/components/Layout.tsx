@@ -5,7 +5,7 @@ import {
   DashboardOutlined, TeamOutlined, SettingOutlined, LogoutOutlined,
   AuditOutlined, SafetyCertificateOutlined, PictureOutlined, SoundOutlined,
   ShopOutlined, OrderedListOutlined, DollarCircleOutlined, FileTextOutlined, UserOutlined,
-  SkinOutlined, AppstoreOutlined, EyeOutlined, CoffeeOutlined, HomeOutlined, CompassOutlined, ClockCircleOutlined, ShoppingCartOutlined, EnvironmentOutlined, CommentOutlined, TagsOutlined,
+  SkinOutlined, AppstoreOutlined, EyeOutlined, CoffeeOutlined, HomeOutlined, CompassOutlined, ClockCircleOutlined, ShoppingCartOutlined, EnvironmentOutlined, CommentOutlined, TagsOutlined, ScanOutlined,
 } from '@ant-design/icons';
 
 const { Header, Sider, Content } = AntLayout;
@@ -23,7 +23,8 @@ const Layout = () => {
         { key: '/admin', icon: <TeamOutlined />, label: '管理员管理' },
         { key: '/user', icon: <UserOutlined />, label: '游客用户' },
         { key: '/role', icon: <SafetyCertificateOutlined />, label: '角色权限' },
-        { key: '/settings', icon: <SettingOutlined />, label: '系统设置' },
+        { key: '/merchant-dashboard', icon: <ShopOutlined />, label: '商家工作台' },
+    { key: '/settings', icon: <SettingOutlined />, label: '系统设置' },
     { key: '/messages', icon: <SoundOutlined />, label: '消息管理' },
     { key: '/operation-logs', icon: <FileTextOutlined />, label: '操作日志' },
     { key: '/sensitive-words', icon: <SafetyCertificateOutlined />, label: '敏感词管理' },
@@ -54,6 +55,7 @@ const Layout = () => {
       key: 'zhu', icon: <HomeOutlined />, label: '住·民宿住宿',
       children: [
         { key: '/homestay', icon: <HomeOutlined />, label: '民宿管理' },
+        { key: '/room-calendar', icon: <ClockCircleOutlined />, label: '房态日历' },
         { key: '/homestay-reviews', icon: <EyeOutlined />, label: '民宿评价' },
       ],
     },
@@ -61,6 +63,7 @@ const Layout = () => {
       key: 'xing', icon: <CompassOutlined />, label: '行·线路门票',
       children: [
         { key: '/tickets', icon: <CompassOutlined />, label: '票务管理' },
+        { key: '/e-ticket-verify', icon: <ScanOutlined />, label: '电子票核销' },
         { key: '/ticket-reviews', icon: <EyeOutlined />, label: '票务评价' },
         { key: '/traffic-guides', icon: <EnvironmentOutlined />, label: '交通攻略' },
       ],
@@ -91,11 +94,11 @@ const Layout = () => {
   const getOpenKeys = () => {
     const path = location.pathname;
     const parentMap: Record<string, string> = {
-      '/admin': 'sys', '/user': 'sys', '/role': 'sys', '/settings': 'sys', '/messages': 'sys', '/operation-logs': 'sys', '/sensitive-words': 'sys', '/recommends': 'sys', '/reports': 'sys',
+      '/admin': 'sys', '/user': 'sys', '/role': 'sys', '/settings': 'sys', '/messages': 'sys', '/operation-logs': 'sys', '/sensitive-words': 'sys', '/recommends': 'sys', '/reports': 'sys', '/merchant-dashboard': 'sys',
       '/product-category': 'yi', '/products': 'yi', '/product-reviews': 'yi',
       '/food': 'shi', '/restaurant-reviews': 'shi', '/agro-products': 'shi', '/agro-category': 'shi', '/meal-slots': 'shi',
-      '/homestay': 'zhu', '/homestay-reviews': 'zhu',
-      '/tickets': 'xing', '/ticket-reviews': 'xing', '/traffic-guides': 'xing',
+      '/homestay': 'zhu', '/room-calendar': 'zhu', '/homestay-reviews': 'zhu',
+      '/tickets': 'xing', '/e-ticket-verify': 'xing', '/ticket-reviews': 'xing', '/traffic-guides': 'xing',
       '/travel-note': 'she', '/comment-admin': 'she', '/topics': 'she',
       '/application': 'ops', '/merchant': 'ops', '/banner': 'ops', '/announcement': 'ops', '/order': 'ops', '/settlement': 'ops',
     };

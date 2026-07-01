@@ -10,6 +10,8 @@ export class Ticket {
   @Column({ type: 'int', default: 9999 }) stock: number;
   @Column({ type: 'decimal', precision: 2, scale: 1, default: 5.0 }) rating: number;
   @Column({ name: 'refund_policy', type: 'varchar', length: 500, nullable: true }) refundPolicy: string;
+  @Column({ name: 'e_ticket_code', type: 'varchar', length: 50, nullable: true }) eTicketCode: string;
+  @Column({ name: 'e_ticket_status', type: 'tinyint', default: 0 }) eTicketStatus: number;
   @Column({ type: 'text', nullable: true }) description: string;
   @Column({ name: 'merchant_id', type: 'int', unsigned: true, nullable: true }) merchantId: number;
   @Column({ type: 'tinyint', default: 1 }) status: number;
