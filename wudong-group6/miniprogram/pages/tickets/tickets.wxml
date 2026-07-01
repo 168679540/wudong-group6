@@ -40,6 +40,7 @@
           <view style="color:#fa8c16;font-size:22rpx">⭐{{item.rating}}</view>
         </view>
         <view wx:if="{{item.reply}}" class="tag tag-blue" style="margin-top:4rpx;font-size:22rpx">回复: {{item.reply}}</view>
+        <view wx:if="{{item.followUp}}" style="margin-top:4rpx;background:#f6ffed;padding:6rpx 10rpx;border-radius:6rpx;font-size:22rpx">✏️追评: {{item.followUp}}</view>
       </view>
 
       <!-- 写评价 -->

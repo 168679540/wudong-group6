@@ -1,7 +1,7 @@
 var IMG = 'http://127.0.0.1:3000';
 function fixImg(url) { if (!url) return ''; return url.startsWith('/') ? IMG + url : url; }
 var api = require('../../utils/api');
-Page({ data: { list: [], cats: ['全部'], cat: '', minPrice: '', maxPrice: '', detail: null, buyTarget: null, specQty: 1, specSizes: [], specColors: [], specSizeIdx: 0, specColorIdx: 0 },
+Page({ data: { list: [], cats: ['全部'], cat: '', minPrice: '', maxPrice: '', detail: null, reviews: [], reviewLoading: false, myComment: '', submitting: false, buyTarget: null, specQty: 1, specSizes: [], specColors: [], specSizeIdx: 0, specColorIdx: 0 },
   onLoad() { var that = this; api.getCategories().then(function(r) { if (r.success) that.setData({ cats: ['全部', ...r.data.map(function(c) { return c.name; })] }); }); this.load(); },
   onShow() { var id = wx.getStorageSync('wudong_goto_product'); if (id) { wx.removeStorageSync('wudong_goto_product'); var that = this; this.tryOpenProduct(Number(id), 0); } },
   tryOpenProduct(id, retry) { var that = this; var p = this.data.list.find(function(x) { return x.id == id; }); if (p) { that.openDetail({ currentTarget: { dataset: { id: id } } }); } else if (retry < 15) { setTimeout(function() { that.tryOpenProduct(id, retry + 1); }, 300); } },
@@ -9,8 +9,10 @@ Page({ data: { list: [], cats: ['全部'], cat: '', minPrice: '', maxPrice: '', 
   setCat(e) { var c = e.currentTarget.dataset.c; this.setData({ cat: c === '全部' ? '' : c }); this.load(); },
   onMin(e) { this.setData({ minPrice: e.detail.value }); this.load(); },
   onMax(e) { this.setData({ maxPrice: e.detail.value }); this.load(); },
-  openDetail(e) { var id = e.currentTarget.dataset.id; var p = this.data.list.find(function(x) { return x.id == id; }); if (p) { var d = Object.assign({}, p); d.coverImage = fixImg(d.coverImage); this.setData({ detail: d }); } },
-  closeDetail() { this.setData({ detail: null }); },
+  openDetail(e) { var id = e.currentTarget.dataset.id; var p = this.data.list.find(function(x) { return x.id == id; }); if (p) { var d = Object.assign({}, p); d.coverImage = fixImg(d.coverImage); this.setData({ detail: d, reviews: [], reviewLoading: true, myComment: '' }); var that = this; api.getReviews('product', p.id).then(function(res) { if (res.success) that.setData({ reviews: res.data || [] }); }).catch(function(){}).finally(function() { that.setData({ reviewLoading: false }); }); } },
+  closeDetail() { this.setData({ detail: null, reviews: [] }); },
+  onMyComment(e) { this.setData({ myComment: e.detail.value }); },
+  submitReview() { var that = this; var detailId = this.data.detail.id; if (!this.data.myComment.trim()) return; this.setData({ submitting: true }); api.createReview('product', { productId: detailId, rating: 5, content: this.data.myComment.trim() }).then(function(r) { if (r.success) { wx.showToast({ title: '评价成功' }); that.setData({ myComment: '' }); api.getReviews('product', detailId).then(function(res) { if (res.success) that.setData({ reviews: res.data || [], reviewLoading: false }); }); } else { wx.showToast({ title: r.message || '失败', icon: 'none' }); } }).catch(function(){ wx.showToast({ title: '评价失败', icon: 'none' }); }).finally(function() { that.setData({ submitting: false }); }); },
   buyFromDetail() { var p = this.data.detail; this.setData({ detail: null }); if (p) this.openBuyById(p.id); },
   openBuyById(id) { var p = this.data.list.find(function(x) { return x.id == id; }); if (!p) return;
     var specs = {}; try { if (p.specs) specs = typeof p.specs === 'string' ? JSON.parse(p.specs) : p.specs; } catch(_){}
