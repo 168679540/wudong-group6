@@ -1,11 +1,49 @@
 <view class="container">
-  <view class="card" wx:for="{{list}}" wx:key="id">
+  <view class="card" wx:for="{{list}}" wx:key="id" bindtap="openDetail" data-id="{{item.id}}">
     <image src="{{item.coverImage}}" style="width:100%;height:320rpx;border-radius:12rpx" mode="aspectFill"/>
     <view style="font-weight:bold;font-size:30rpx;margin-top:12rpx">{{item.name}}</view>
     <view style="color:#666;margin:8rpx 0"><text class="tag tag-blue">{{item.roomCount}}间房</text> {{item.amenities}}</view>
     <view class="price" style="font-size:32rpx">¥{{item.pricePerNight}}<text style="color:#999;font-size:24rpx">/晚</text></view>
-    <button size="mini" type="primary" style="margin-top:12rpx" bindtap="openBook" data-id="{{item.id}}">预订房间</button>
+    <view style="display:flex;gap:8rpx;margin-top:12rpx">
+      <button size="mini" style="flex:1" bindtap="openDetail" data-id="{{item.id}}" catchtap="openDetail">详情</button>
+      <button size="mini" type="primary" style="flex:1" bindtap="openBook" data-id="{{item.id}}" catchtap="openBook">预订房间</button>
+    </view>
   </view>
+
+  <!-- ====== 详情弹窗 ====== -->
+  <view class="mask" wx:if="{{detail}}" catchtouchmove="noop">
+    <view class="popup" catchtouchmove="noop">
+      <image src="{{detail.coverImage}}" style="width:100%;height:360rpx;border-radius:12rpx;margin-bottom:16rpx" mode="aspectFill"/>
+      <view style="font-size:36rpx;font-weight:bold;margin-bottom:8rpx">{{detail.name}}</view>
+      <view style="color:#666;margin-bottom:8rpx"><text class="tag tag-blue">{{detail.roomCount}}间房</text> {{detail.amenities}}</view>
+      <view class="price" style="font-size:36rpx;margin-bottom:12rpx">¥{{detail.pricePerNight}}<text style="color:#999;font-size:24rpx">/晚</text></view>
+      <view style="background:#fafafa;padding:20rpx;border-radius:12rpx;line-height:1.8;font-size:28rpx;margin-bottom:12rpx;white-space:pre-wrap">{{detail.description||'暂无介绍'}}</view>
+
+      <!-- 评价列表 -->
+      <view style="font-weight:bold;margin-bottom:12rpx">📝 住客评价 ({{reviews.length}}条)</view>
+      <view wx:if="{{reviewLoading}}" style="text-align:center;padding:20rpx;color:#999">加载中...</view>
+      <view wx:elif="{{reviews.length===0}}" style="text-align:center;padding:20rpx;color:#999">暂无评价，来写第一条吧</view>
+      <view wx:for="{{reviews}}" wx:key="id" style="padding:12rpx 0;border-bottom:1px solid #f0f0f0">
+        <view style="display:flex;justify-content:space-between">
+          <view style="font-size:26rpx;flex:1">{{item.content}}</view>
+          <view style="color:#fa8c16;font-size:22rpx">⭐{{item.rating}}</view>
+        </view>
+        <view wx:if="{{item.reply}}" class="tag tag-blue" style="margin-top:4rpx;font-size:22rpx">回复: {{item.reply}}</view>
+      </view>
+
+      <!-- 写评价 -->
+      <view style="display:flex;gap:8rpx;margin-top:16rpx">
+        <input value="{{myComment}}" bindinput="onMyComment" placeholder="写评价..." style="flex:1;border:1px solid #e5e5e5;border-radius:8rpx;padding:12rpx;font-size:26rpx"/>
+        <button size="mini" type="primary" bindtap="submitReview" loading="{{submitting}}">发送</button>
+      </view>
+
+      <view style="display:flex;gap:12rpx;margin-top:20rpx">
+        <button style="flex:1" bindtap="closeDetail">关闭</button>
+        <button type="primary" style="flex:1" bindtap="bookFromDetail" catchtap="bookFromDetail">立即预订</button>
+      </view>
+    </view>
+  </view>
+
   <!-- 预订弹窗 -->
   <view class="mask" wx:if="{{bookTarget}}" catchtouchmove="noop">
     <view class="popup" catchtouchmove="noop">
