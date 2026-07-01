@@ -6,5 +6,7 @@ page { background: #f8f6f3; font-size: 14px; color: #3a3a3a; }
 .tag-blue { background: #fef5e7; color: #d4a14b; }
 .tag-green { background: #eaf5e4; color: #7a9e5a; }
 .tag-orange { background: #fff0f0; color: #e85d2f; }
+.tag-active { background: #d4a14b; color: #fff; font-weight: bold; }
+.tag-light { background: #f0f0f0; color: #999; }
 .btn-primary { background: linear-gradient(135deg, #d4a14b, #c8923a); color: #fff; border-radius: 10px; padding: 12px; text-align: center; font-size: 16px; font-weight: 500; border: none; }
 .section-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; color: #3a3a3a; }

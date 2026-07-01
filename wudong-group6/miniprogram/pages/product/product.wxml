@@ -1,7 +1,7 @@
 <view class="container">
   <view class="card" style="margin-bottom:16rpx">
     <view class="cats">
-      <text class="tag {{cat===''?'tag-blue':'tag-green'}}" wx:for="{{cats}}" wx:key="*this" wx:for-item="c" bindtap="setCat" data-c="{{c}}">{{c}}</text>
+      <text class="tag {{(cat===''&&c==='全部')||cat===c?'tag-active':'tag-light'}}" wx:for="{{cats}}" wx:key="*this" wx:for-item="c" bindtap="setCat" data-c="{{c}}">{{c}}</text>
     </view>
     <view style="display:flex;align-items:center;gap:12rpx;margin-top:16rpx">
       <input placeholder="最低价" value="{{minPrice}}" bindinput="onMin" type="number" style="flex:1;border:1px solid #e5e5e5;border-radius:8rpx;padding:8rpx;font-size:24rpx"/>
