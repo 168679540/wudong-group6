@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Menu, Card, Row, Col, Tag, Spin, message, Button, Modal, Descriptions, Select, InputNumber, DatePicker, Space, Rate } from 'antd';
+import { Layout, Menu, Card, Row, Col, Tag, Spin, message, Button, Modal, Descriptions, Select, InputNumber, DatePicker, Space, Rate, List, Empty, Input } from 'antd';
 import { CompassOutlined, EnvironmentOutlined, ArrowLeftOutlined, HeartOutlined, HeartFilled, ShoppingCartOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { getTicketList, Ticket } from '../api/ticket';
@@ -7,6 +7,7 @@ import { createOrder } from '../api/order';
 import { toggleFavorite, checkFavorite } from '../api/favorite';
 import { getTrafficList, TrafficGuide } from '../api/traffic';
 import CartDrawer from '../components/CartDrawer';
+import request from '../api/request';
 
 const { Header, Content, Footer } = Layout;
 
@@ -28,6 +29,13 @@ const PublicTickets: React.FC = () => {
   const [traffic, setTraffic] = useState<TrafficGuide[]>([]);
   const [trafficDetail, setTrafficDetail] = useState<TrafficGuide | null>(null);
 
+  // 评价
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [myRating, setMyRating] = useState(5);
+  const [myContent, setMyContent] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => { getTrafficList({ pageSize: 10 }).then((r: any) => { if (r.success) setTraffic(r.data || []); }).catch(() => {}); }, []);
   useEffect(() => {
     setLoading(true);
@@ -39,6 +47,14 @@ const PublicTickets: React.FC = () => {
   const loadFavs = async (items: Ticket[]) => { const m: Record<number, boolean> = {}; await Promise.all(items.map(async t => { try { const rr: any = await checkFavorite('ticket', t.id); m[t.id] = rr?.data?.favorited || false; } catch { m[t.id] = false; } })); setFavMap(m); };
   const handleFav = async (t: Ticket) => { const res: any = await toggleFavorite('ticket', t.id); if (res.success) { setFavMap(p => ({ ...p, [t.id]: res.data.favorited })); } };
   const openBuy = (t: Ticket) => { setBuyTarget(t); setTicketType('成人票'); setQty(1); setVisitDate(null); };
+
+  const openDetail = (t: Ticket) => {
+    setDetail(t); setMyRating(5); setMyContent('');
+    setReviewLoading(true);
+    request.get('/ticket-review/list', { params: { ticketId: t.id } }).then((res: any) => {
+      if (res.success) setReviews(res.data || []);
+    }).catch(() => {}).finally(() => setReviewLoading(false));
+  };
 
   const handleBuyNow = async () => {
     if (!buyTarget) return; setBuying(true);
@@ -83,7 +99,7 @@ const PublicTickets: React.FC = () => {
                       icon={favMap[t.id] ? <HeartFilled style={{ color: '#ff4d4f', fontSize: 18 }} /> : <HeartOutlined style={{ fontSize: 18 }} />}
                       onClick={e => { e.stopPropagation(); handleFav(t); }} />
                   </div>}
-                    actions={[<Button type="link" onClick={() => setDetail(t)}>查看详情</Button>, <Button type="primary" icon={<ShoppingCartOutlined />} onClick={() => openBuy(t)}>{t.type === '门票' ? '立即购票' : '立即预订'}</Button>]}>
+                    actions={[<Button type="link" onClick={() => openDetail(t)}>查看详情</Button>, <Button type="primary" icon={<ShoppingCartOutlined />} onClick={() => openBuy(t)}>{t.type === '门票' ? '立即购票' : '立即预订'}</Button>]}>
                     <Card.Meta title={t.name} description={<><span style={{ color: '#f5222d', fontSize: 22, fontWeight: 'bold' }}>¥{t.price}</span><br /><Tag color={t.stock > 0 ? 'green' : 'red'}>{t.stock > 0 ? `库存 ${t.stock}` : '已售罄'}</Tag><br /><span style={{ color: '#666', fontSize: 13 }}>{t.description?.slice(0, 60)}...</span></>} />
                   </Card>
                 </Col>
@@ -115,7 +131,37 @@ const PublicTickets: React.FC = () => {
       </Content>
       <Modal open={!!detail} onCancel={() => setDetail(null)} footer={[<Button key="back" onClick={() => setDetail(null)}>返回</Button>, <Button key="buy" type="primary" disabled={detail?.stock === 0} onClick={() => { const d = detail; setDetail(null); setTimeout(() => d && openBuy(d), 100); }}>{detail?.type === '门票' ? '立即购票' : '立即预订'} ¥{detail?.price}</Button>]} width={680} title={detail?.name}>
         {detail && (<div><img src={detail.coverImage} alt={detail.name} style={{ width: '100%', maxHeight: 380, objectFit: 'cover', borderRadius: 8, marginBottom: 16 }} onError={e => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/600x400'; }} />
-          <Descriptions column={2} bordered size="small"><Descriptions.Item label="类型"><Tag color={detail.type === '门票' ? 'blue' : 'orange'}>{detail.type}</Tag></Descriptions.Item><Descriptions.Item label="价格"><span style={{ color: '#f5222d', fontSize: 20, fontWeight: 'bold' }}>¥{detail.price}</span></Descriptions.Item><Descriptions.Item label="库存"><Tag color={detail.stock > 0 ? 'green' : 'red'}>{detail.stock > 0 ? `${detail.stock} 份` : '已售罄'}</Tag></Descriptions.Item><Descriptions.Item label="介绍" span={2}>{detail.description}</Descriptions.Item><Descriptions.Item label="退票政策" span={2}><span style={{color:'#fa8c16'}}>{(detail as any).refundPolicy || '使用前24小时可退扣10%手续费，24小时内不可退'}</span></Descriptions.Item></Descriptions></div>)}
+          <Descriptions column={2} bordered size="small"><Descriptions.Item label="类型"><Tag color={detail.type === '门票' ? 'blue' : 'orange'}>{detail.type}</Tag></Descriptions.Item><Descriptions.Item label="价格"><span style={{ color: '#f5222d', fontSize: 20, fontWeight: 'bold' }}>¥{detail.price}</span></Descriptions.Item><Descriptions.Item label="库存"><Tag color={detail.stock > 0 ? 'green' : 'red'}>{detail.stock > 0 ? `${detail.stock} 份` : '已售罄'}</Tag></Descriptions.Item><Descriptions.Item label="介绍" span={2}>{detail.description}</Descriptions.Item><Descriptions.Item label="退票政策" span={2}><span style={{color:'#fa8c16'}}>{(detail as any).refundPolicy || '使用前24小时可退扣10%手续费，24小时内不可退'}</span></Descriptions.Item></Descriptions>
+          {/* 评价列表 */}
+          <h4 style={{ marginTop: 20, marginBottom: 12 }}>📝 游客评价 ({reviews.length}条)</h4>
+          {reviewLoading && <Spin />}
+          {!reviewLoading && reviews.length === 0 && <div style={{ color: '#999', padding: 12 }}>暂无评价，来写第一条吧</div>}
+          {!reviewLoading && reviews.length > 0 && (
+            <List size="small" dataSource={reviews} renderItem={(r: any) => (
+              <List.Item extra={<Rate disabled value={r.rating} style={{ fontSize: 12 }} />}>
+                <List.Item.Meta title={<span style={{ fontSize: 13 }}>{r.content}</span>}
+                  description={<div><span style={{ color: '#999', fontSize: 12 }}>{new Date(r.createdAt).toLocaleString()}</span>
+                    {r.reply && <Tag color="blue" style={{ marginLeft: 8, fontSize: 11 }}>回复: {r.reply}</Tag>}</div>} />
+              </List.Item>
+            )} />
+          )}
+          {/* 写评价 */}
+          <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: 12, marginTop: 12 }}>
+            <h5 style={{ marginBottom: 8 }}>✍️ 写评价</h5>
+            <Rate value={myRating} onChange={setMyRating} style={{ marginBottom: 8 }} />
+            <Input.TextArea rows={2} value={myContent} onChange={e => setMyContent(e.target.value)} placeholder="分享您的游玩体验..." maxLength={500} style={{ marginBottom: 8 }} />
+            <Button type="primary" size="small" loading={submitting} onClick={async () => {
+              if (!detail || !myContent.trim()) { message.warning('请输入评价内容'); return; }
+              setSubmitting(true);
+              try {
+                const res: any = await request.post('/ticket-review/create', { ticketId: detail.id, rating: myRating, content: myContent.trim() });
+                if (res.success) { message.success('评价成功！'); setMyRating(5); setMyContent('');
+                  const r2: any = await request.get('/ticket-review/list', { params: { ticketId: detail.id } }); if (r2.success) setReviews(r2.data || []); }
+                else message.error(res.message || '评价失败');
+              } catch { message.error('评价失败'); } finally { setSubmitting(false); }
+            }}>提交评价</Button>
+          </div>
+        </div>)}
       </Modal>
       <Modal open={!!buyTarget} onCancel={() => setBuyTarget(null)} footer={[<Button key="back" onClick={() => setBuyTarget(null)}>返回</Button>, <Button key="buy" type="primary" loading={buying} onClick={handleBuyNow}>确认购买 ¥{((Number(buyTarget?.price) || 0) * qty).toFixed(2)}</Button>]} width={480} title={`购买 - ${buyTarget?.name}`}>
         {buyTarget && (<div style={{ padding: '16px 0' }}>
